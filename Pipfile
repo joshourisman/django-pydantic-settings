@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django = "*"
 pydantic = "*"
+dj-database-url = "*"
 
 [dev-packages]
 flake8 = "*"
