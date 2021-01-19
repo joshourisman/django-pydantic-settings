@@ -1,12 +1,18 @@
 from pathlib import Path
 from typing import Dict, List
 
-from pydantic import BaseSettings, DirectoryPath, Field
-from pydantic.networks import PostgresDsn
+from pydantic import AnyUrl, BaseSettings, DirectoryPath, Field, validator
 
 
 class DatabaseSettings(BaseSettings):
-    default: PostgresDsn
+    default: AnyUrl = Field("sqlite3://baz", env="DATABASE_URL")
+
+    @validator("*")
+    def format_database_settings(cls, v):
+        return {
+            "ENGINE": f"django.db.backends.{v.scheme}",
+            "NAME": v.path.strip("/"),
+        }
 
 
 class Settings(BaseSettings):
@@ -53,12 +59,7 @@ class Settings(BaseSettings):
 
     WSGI_APPLICATION: str = "settings_test.wsgi.application"
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "mydatabase",
-        }
-    }
+    DATABASES: DatabaseSettings = Field({})
 
     AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
         {
