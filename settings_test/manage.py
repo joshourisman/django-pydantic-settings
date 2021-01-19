@@ -3,12 +3,12 @@
 import sys
 
 from django.conf import settings
-from settings_test.settings import Settings
+from pydantic_settings import SetUp
 
 
 def main():
     """Run administrative tasks."""
-    settings.configure(**Settings().dict())
+    settings.configure(**SetUp().settings_module().dict())
 
     try:
         from django.core.management import execute_from_command_line

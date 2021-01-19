@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 from django.conf import settings
 from django.core.wsgi import get_wsgi_application
 
-from settings_test.settings import Settings
+from pydantic_settings import SetUp
 
-settings.configure(**Settings().dict())
+settings.configure(**SetUp().settings_module().dict())
 application = get_wsgi_application()
