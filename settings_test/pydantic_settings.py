@@ -8,7 +8,14 @@ from pydantic import (
     DirectoryPath,
     Field,
     validator,
+    PyObject,
 )
+
+
+class SetUp(BaseSettings):
+    settings_module: PyObject = Field(
+        "pydantic_settings.Settings", env="DJANGO_SETTINGS_MODULE"
+    )
 
 
 class DjangoDsn(AnyUrl):
