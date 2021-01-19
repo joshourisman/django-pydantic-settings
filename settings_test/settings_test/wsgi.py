@@ -13,5 +13,5 @@ from django.core.wsgi import get_wsgi_application
 
 from pydantic_settings import SetUp
 
-settings.configure(**SetUp().settings_module().dict())
+SetUp().configure()
 application = get_wsgi_application()

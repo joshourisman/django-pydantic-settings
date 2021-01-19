@@ -8,7 +8,7 @@ from pydantic_settings import SetUp
 
 def main():
     """Run administrative tasks."""
-    settings.configure(**SetUp().settings_module().dict())
+    SetUp().configure()
 
     try:
         from django.core.management import execute_from_command_line

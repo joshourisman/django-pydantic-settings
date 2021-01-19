@@ -1,3 +1,4 @@
+from django.conf import settings
 import dj_database_url
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -16,6 +17,9 @@ class SetUp(BaseSettings):
     settings_module: PyObject = Field(
         "pydantic_settings.Settings", env="DJANGO_SETTINGS_MODULE"
     )
+
+    def configure(self):
+        settings.configure(**self.settings_module().dict())
 
 
 class DjangoDsn(AnyUrl):
