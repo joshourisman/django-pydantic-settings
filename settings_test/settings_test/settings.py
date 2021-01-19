@@ -1,18 +1,74 @@
+import dj_database_url
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 
 from pydantic import AnyUrl, BaseSettings, DirectoryPath, Field, validator
 
 
+class DjangoDsn(AnyUrl):
+    def __init__(
+        self,
+        url: str,
+        *,
+        scheme: str,
+        user: Optional[str] = None,
+        password: Optional[str] = None,
+        host: Optional[str] = None,
+        tld: Optional[str] = None,
+        host_type: str = "domain",
+        port: Optional[str] = None,
+        path: str = None,
+        query: Optional[str] = None,
+        fragment: Optional[str] = None,
+    ) -> None:
+        str.__init__(url)
+        self.scheme = scheme
+        self.user = user
+        self.password = password
+        self.host = host
+        self.tld = tld
+        self.host_type = host_type
+        self.port = port
+        self.path = path
+        self.query = query
+        self.fragment = fragment
+
+    allowed_schemes = {
+        "postgres",
+        "postgresql",
+        "postgis",
+        "mssql",
+        "mysql",
+        "mysqlgis",
+        "sqlite",
+        "spatialite",
+        "oracle",
+        "oraclegis",
+        "redshift",
+    }
+
+    @classmethod
+    def validate_host(
+        cls, parts: Dict[str, str]
+    ) -> Tuple[Optional[str], Optional[str], str, bool]:
+        host = None
+        for f in ("domain", "ipv4", "ipv6"):
+            host = parts[f]
+            if host:
+                break
+
+        if host is None:
+            return None, None, "file", False
+
+        return super().validate_host(cls, parts)  # type: ignore
+
+
 class DatabaseSettings(BaseSettings):
-    default: AnyUrl = Field("sqlite3://baz", env="DATABASE_URL")
+    default: DjangoDsn = Field(env="DATABASE_URL")
 
     @validator("*")
     def format_database_settings(cls, v):
-        return {
-            "ENGINE": f"django.db.backends.{v.scheme}",
-            "NAME": v.path.strip("/"),
-        }
+        return dj_database_url.parse(v)
 
 
 class Settings(BaseSettings):
