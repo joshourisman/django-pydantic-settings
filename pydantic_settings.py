@@ -82,7 +82,6 @@ class DjangoDsn(AnyUrl):
 
 class DatabaseSettings(BaseSettings):
     default: DjangoDsn = Field(env="DATABASE_URL")
-    secondary: DjangoDsn = Field(env="SECONDARY_DATABASE_URL")
 
     @validator("*")
     def format_database_settings(cls, v):
