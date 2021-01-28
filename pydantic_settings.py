@@ -19,7 +19,8 @@ class SetUp(BaseSettings):
     )
 
     def configure(self):
-        settings.configure(**self.settings_module().dict())
+        if not settings.configured:
+            settings.configure(**self.settings_module().dict())
 
 
 class DjangoDsn(AnyUrl):
