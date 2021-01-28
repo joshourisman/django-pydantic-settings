@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-pydantic-settings"
-version = "0.1.0"
+version = "0.1.1"
 description = "Manage Django settings with Pydantic."
 authors = ["Josh Ourisman <me@josho.io>"]
 license = "MIT"
