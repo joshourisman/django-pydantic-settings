@@ -77,7 +77,7 @@ class DjangoDsn(AnyUrl):
         if host is None:
             return None, None, "file", False
 
-        return super().validate_host(cls, parts)  # type: ignore
+        return super().validate_host(parts)
 
 
 class DatabaseSettings(BaseSettings):
