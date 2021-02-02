@@ -86,3 +86,6 @@ class Settings(BaseSettings):
     USE_L10N: bool = True
     USE_TZ: bool = True
     STATIC_URL: str = "/static/"
+
+    class Config:
+        env_prefix = "DJANGO_"
