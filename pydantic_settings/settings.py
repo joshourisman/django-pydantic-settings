@@ -10,7 +10,7 @@ from .types import DjangoDsn
 
 class SetUp(BaseSettings):
     settings_module: PyObject = Field(
-        "pydantic_settings.Settings", env="DJANGO_SETTINGS_MODULE"
+        "pydantic_settings.settings.Settings", env="DJANGO_SETTINGS_MODULE"
     )
 
     def configure(self):
