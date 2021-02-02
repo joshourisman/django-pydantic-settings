@@ -56,12 +56,12 @@ The `SetUp` class will automatically look for the standard `DJANGO_SETTINGS_MODU
 
 ## Database configuration
 
-By defining multiple `DjangoDsn` attributes of the `DatabaseSettings` class, you can easily configure one or more database connections with environment variables. DSNs are parsed using dj-database-url.
+By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` class, you can easily configure one or more database connections with environment variables. DSNs are parsed using dj-database-url.
 
 ```python
 class DatabaseSettings(BaseSettings):
-    default: DjangoDsn = Field(env="DATABASE_URL")
-    secondary: DjangoDsn = Field(env="SECONDARY_DATABASE_URL")
+    default: DatabaseDsn = Field(env="DATABASE_URL")
+    secondary: DatabaseDsn = Field(env="SECONDARY_DATABASE_URL")
 ```
 
 ```python

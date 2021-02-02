@@ -3,7 +3,7 @@ from typing import Dict, Optional, Tuple
 from pydantic import AnyUrl
 
 
-class DjangoDsn(AnyUrl):
+class DatabaseDsn(AnyUrl):
     def __init__(
         self,
         url: str,

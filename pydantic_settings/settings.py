@@ -5,7 +5,7 @@ import dj_database_url
 from django.conf import settings
 from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
 
-from .types import DjangoDsn
+from .database import DatabaseDsn
 
 
 class SetUp(BaseSettings):
@@ -19,7 +19,7 @@ class SetUp(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    default: DjangoDsn = Field(env="DATABASE_URL")
+    default: DatabaseDsn = Field(env="DATABASE_URL")
 
     @validator("*")
     def format_database_settings(cls, v):
