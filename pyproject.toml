@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/joshourisman/django-pydantic-settings"
 repository = "https://github.com/joshourisman/django-pydantic-settings"
 packages = [
-    { include = "pydantic_settings.py" }
+    { include = "pydantic_settings" }
 ]
 
 [tool.poetry.dependencies]
