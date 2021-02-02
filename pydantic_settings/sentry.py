@@ -2,6 +2,8 @@ import sentry_sdk
 from pydantic import AnyUrl
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from .settings import Settings
+
 
 class SentryDsn(AnyUrl):
     @classmethod
@@ -16,3 +18,7 @@ class SentryDsn(AnyUrl):
         )
 
         return dsn
+
+
+class SentrySettings(Settings):
+    SENTRY_DSN: SentryDsn
