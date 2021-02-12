@@ -14,7 +14,7 @@ python = "^3.6"
 Django = "^3.1.5"
 pydantic = "^1.7.3"
 dj-database-url = "^0.5.0"
-sentry-sdk = { version = "^0.19.5", optional = true }
+sentry-sdk = { version = ">=0.19.5,<0.21.0", optional = true }
 
 [tool.poetry.extras]
 sentry = ["sentry-sdk"]
