@@ -3,6 +3,7 @@ from typing import Dict, List
 
 import dj_database_url
 from django.conf import settings
+from django.core.management.utils import get_random_secret_key
 from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
 
 from .database import DatabaseDsn
@@ -28,8 +29,8 @@ class DatabaseSettings(BaseSettings):
 
 class PydanticSettings(BaseSettings):
     BASE_DIR: DirectoryPath = Field(Path(__file__).resolve().parent.parent)
-    SECRET_KEY: str = "$^ds)@-s8$d+59*3f=u7-h^@@x50hoa_!*w_!7yl-f-8pk5v+q"
-    DEBUG: bool = True
+    SECRET_KEY: str = Field(default_factory=get_random_secret_key)
+    DEBUG: bool = False
     ALLOWED_HOSTS: List[str] = []
     INSTALLED_APPS: List[str] = [
         "django.contrib.admin",
@@ -48,7 +49,7 @@ class PydanticSettings(BaseSettings):
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
-    ROOT_URLCONF: str = "settings_test.urls"
+    ROOT_URLCONF: str
     TEMPLATES: List[Dict] = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -64,7 +65,7 @@ class PydanticSettings(BaseSettings):
             },
         },
     ]
-    WSGI_APPLICATION: str = "settings_test.wsgi.application"
+    WSGI_APPLICATION: str
     DATABASES: DatabaseSettings = Field({})
     AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
         {
