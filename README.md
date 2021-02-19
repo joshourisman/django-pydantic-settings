@@ -54,6 +54,10 @@ application = get_wsgi_application()
 
 The `SetUp` class will automatically look for the standard `DJANGO_SETTINGS_MODULE` environment variable, read it, confirm that it points to an existing Python module, and load that module. Your `DJANGO_SETTINGS_MODULE` variable should point to a `pydantic_settings.settings.PydanticSettings` sub-class (though technically any Python class that defines a `dict()` method which returns a Python dictionary of key/value pairs matching the required Django settings will work). Calling the `configure()` method will then use the specified module to configure your project's Django settings.
 
+## Required settings
+
+There are only a small number of settings that must be configured before using django-pydantic-settings with your Django project. These are `ROOT_URLCONF` and `WSGI_APPLICATION`. All other settings will either remain at the default provided by Django, or a safe but functional default value. For example, `SECRET_KEY` is automatically generated using Django's own `get_random_secret_key()` function (though you should set this yourself if you're using Django's authentication and don't want to lose your session every time the server is restarted).
+
 ## Database configuration
 
 By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` class, you can easily configure one or more database connections with environment variables. DSNs are parsed using dj-database-url.
