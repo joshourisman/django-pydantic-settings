@@ -10,7 +10,7 @@ from .database import DatabaseDsn
 
 class SetUp(BaseSettings):
     settings_module: PyObject = Field(
-        "pydantic_settings.settings.Settings", env="DJANGO_SETTINGS_MODULE"
+        "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
     )
 
     def configure(self):
@@ -26,7 +26,7 @@ class DatabaseSettings(BaseSettings):
         return dj_database_url.parse(v)
 
 
-class Settings(BaseSettings):
+class PydanticSettings(BaseSettings):
     BASE_DIR: DirectoryPath = Field(Path(__file__).resolve().parent.parent)
     SECRET_KEY: str = "$^ds)@-s8$d+59*3f=u7-h^@@x50hoa_!*w_!7yl-f-8pk5v+q"
     DEBUG: bool = True
