@@ -56,7 +56,7 @@ The `SetUp` class will automatically look for the standard `DJANGO_SETTINGS_MODU
 
 ## Required settings
 
-There are only a small number of settings that must be configured before using django-pydantic-settings with your Django project. These are `ROOT_URLCONF` and `WSGI_APPLICATION`. All other settings will either remain at the default provided by Django, or a safe but functional default value. For example, `SECRET_KEY` is automatically generated using Django's own `get_random_secret_key()` function (though you should set this yourself if you're using Django's authentication and don't want to lose your session every time the server is restarted).
+There are only a small number of settings that must be configured before using django-pydantic-settings with your Django project. These are `ROOT_URLCONF`, `WSGI_APPLICATION`, and `DATABASE_URL`. All other settings will either remain at the default provided by Django, or a safe but functional default value. For example, `SECRET_KEY` is automatically generated using Django's own `get_random_secret_key()` function (though you should set this yourself if you're using Django's authentication and don't want to lose your session every time the server is restarted).
 
 ## Database configuration
 
