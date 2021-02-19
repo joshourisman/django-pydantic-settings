@@ -1,3 +1,3 @@
-from .settings import SetUp
+from .settings import PydanticSettings, SetUp
 
-__ALL__ = [SetUp]
+__ALL__ = [PydanticSettings, SetUp]
