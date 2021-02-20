@@ -1,21 +1,44 @@
+from inspect import getsourcefile
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import dj_database_url
 from django.conf import settings
+from django.core.management.utils import get_random_secret_key
 from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
 
 from .database import DatabaseDsn
 
 
+DEFAULT_SETTINGS_MODULE_FIELD = Field(
+    "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
+)
+
+
 class SetUp(BaseSettings):
-    settings_module: PyObject = Field(
-        "pydantic_settings.settings.Settings", env="DJANGO_SETTINGS_MODULE"
-    )
+    settings_module: PyObject = DEFAULT_SETTINGS_MODULE_FIELD
+    settings_module_string: str = DEFAULT_SETTINGS_MODULE_FIELD
 
     def configure(self):
         if not settings.configured:
-            settings.configure(**self.settings_module().dict())
+            settings_dict = self.settings_module().dict()
+
+            if settings_dict["BASE_DIR"] is None:
+                base_dir = Path(
+                    getsourcefile(SetUp().settings_module)
+                    or "pydantic_settings.settings.PydanticSettings"
+                ).parent.parent.parent
+                settings_dict["BASE_DIR"] = base_dir
+            else:
+                base_dir = settings_dict["BASE_DIR"]
+
+            base_module = self.settings_module_string.rsplit(".", 2)[0]
+            if settings_dict["ROOT_URLCONF"] is None:
+                settings_dict["ROOT_URLCONF"] = ".".join([base_module, "urls"])
+            if settings_dict["WSGI_APPLICATION"] is None:
+                settings_dict["WSGI_APPLICATION"] = ".".join([base_module, "wsgi"])
+
+            settings.configure(**settings_dict)
 
 
 class DatabaseSettings(BaseSettings):
@@ -26,10 +49,10 @@ class DatabaseSettings(BaseSettings):
         return dj_database_url.parse(v)
 
 
-class Settings(BaseSettings):
-    BASE_DIR: DirectoryPath = Field(Path(__file__).resolve().parent.parent)
-    SECRET_KEY: str = "$^ds)@-s8$d+59*3f=u7-h^@@x50hoa_!*w_!7yl-f-8pk5v+q"
-    DEBUG: bool = True
+class PydanticSettings(BaseSettings):
+    BASE_DIR: Optional[DirectoryPath]
+    SECRET_KEY: str = Field(default_factory=get_random_secret_key)
+    DEBUG: bool = False
     ALLOWED_HOSTS: List[str] = []
     INSTALLED_APPS: List[str] = [
         "django.contrib.admin",
@@ -48,7 +71,7 @@ class Settings(BaseSettings):
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
-    ROOT_URLCONF: str = "settings_test.urls"
+    ROOT_URLCONF: Optional[str]
     TEMPLATES: List[Dict] = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -64,7 +87,7 @@ class Settings(BaseSettings):
             },
         },
     ]
-    WSGI_APPLICATION: str = "settings_test.wsgi.application"
+    WSGI_APPLICATION: Optional[str]
     DATABASES: DatabaseSettings = Field({})
     AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
         {

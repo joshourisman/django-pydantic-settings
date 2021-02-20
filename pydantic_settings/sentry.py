@@ -6,7 +6,7 @@ from pydantic.fields import ModelField
 from pydantic.main import BaseConfig
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .settings import Settings
+from .settings import PydanticSettings
 
 
 class SentryDsn(AnyUrl):
@@ -24,5 +24,5 @@ class SentryDsn(AnyUrl):
         return dsn
 
 
-class SentrySettings(Settings):
+class SentrySettings(PydanticSettings):
     SENTRY_DSN: SentryDsn

@@ -52,7 +52,13 @@ SetUp().configure()
 application = get_wsgi_application()
 ```
 
-The `SetUp` class will automatically look for the standard `DJANGO_SETTINGS_MODULE` environment variable, read it, confirm that it points to an existing Python module, and load that module. Your `DJANGO_SETTINGS_MODULE` variable should point to a `pydantic_settings.settings.Settings` sub-class (though technically any Python class that defines a `dict()` method which returns a Python dictionary of key/value pairs matching the required Django settings will work). Calling the `configure()` method will then use the specified module to configure your project's Django settings.
+The `SetUp` class will automatically look for the standard `DJANGO_SETTINGS_MODULE` environment variable, read it, confirm that it points to an existing Python module, and load that module. Your `DJANGO_SETTINGS_MODULE` variable should point to a `pydantic_settings.settings.PydanticSettings` sub-class (though technically any Python class that defines a `dict()` method which returns a Python dictionary of key/value pairs matching the required Django settings will work). Calling the `configure()` method will then use the specified module to configure your project's Django settings.
+
+## Required settings
+
+The only setting that absolutely must be configured in order to run Django using django-pydantic-settings is the DATABASES setting. By default, this is configured by simply setting the `DATABASE_URL` environment variable, as described in the next section. All other settings are provided, or will have calculated, a reasonable default. Other settings worth thinking about are `ROOT_URLCONF` and `WSGI_APPLICATION`, which, unless otherwise specified, are calculated based on your `DJANGO_SETTINGS_MODULE` assuming that you're using the default Django project layout a provided by `django-admin.py startproject`. So, for example, if your `DJANGO_SETINGS_MODULE` is set to `my_awesome_project.settings.PydanticSettingsSubclass`, then `ROOT_URLCONF` and `WSGI_APPLICATION` will be set to `my_awesome_project.urls` and `my_awesome_project.wsgi` respectively. This default behavior can be overridden by simply specifying `ROOT_URLCONF:str = 'the_actual_urlconf'` and `WSGI_APPLICATION:str = 'the_actual_wsgi_file'` in your `PydanticSettings` sub-class.
+
+The other setting worth thinking about is `SECRET_KEY`. By default, `SECRET_KEY` is automatically generated using Django's own `get_random_secret_key()` function. This will work just fine, though as it will be re-calculated every time your `PydanticSettings` sub-class is instantiated, you should set this to somethign static if you're using Django's authentication and don't want to lose your session every time the server is restarted.
 
 ## Database configuration
 
@@ -98,3 +104,7 @@ Type "help", "copyright", "credits" or "license" for more information.
                      'USER': ''}}
 >>>
 ```
+
+## Sentry configuration
+
+django-pydantic-settings provides built-in functionality for configuring your Django project to use [Sentry](https://sentry.io/). The simplest way to use this is to inherit from `pydantic_settings.sentry.SentrySettings` rather than `pydantic_settings.settings.PydanticSettings`. This adds the setting `SENTRY_DSN`, which uses the `pydantic_settings.sentry.SentryDsn` type. This will automatically be set according to the `DJANGO_SENTRY_DSN` environment variable, and expects a Sentry DSN (obviously). It validates that the provided DSN is a valid URL, and then automatically initializes the Sentry SDK using the built-in DjangoIntegration. Using this functionality required `sentry-sdk` to be installed, which will be included automatically if you install `django-pydantic-settings[sentry]`.
