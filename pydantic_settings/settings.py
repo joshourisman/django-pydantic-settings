@@ -1,5 +1,6 @@
+from inspect import getsourcefile
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import dj_database_url
 from django.conf import settings
@@ -16,7 +17,17 @@ class SetUp(BaseSettings):
 
     def configure(self):
         if not settings.configured:
-            settings.configure(**self.settings_module().dict())
+            settings_dict = self.settings_module().dict()
+            if settings_dict["BASE_DIR"] is None:
+                base_dir = Path(
+                    getsourcefile(SetUp().settings_module)
+                    or "pydantic_settings.settings.PydanticSettings"
+                ).parent.parent.parent
+                settings_dict["BASE_DIR"] = base_dir
+            else:
+                base_dir = settings_dict["BASE_DIR"]
+
+            settings.configure(**settings_dict)
 
 
 class DatabaseSettings(BaseSettings):
@@ -28,7 +39,7 @@ class DatabaseSettings(BaseSettings):
 
 
 class PydanticSettings(BaseSettings):
-    BASE_DIR: DirectoryPath = Field(Path(__file__).resolve().parent.parent)
+    BASE_DIR: Optional[DirectoryPath]
     SECRET_KEY: str = Field(default_factory=get_random_secret_key)
     DEBUG: bool = False
     ALLOWED_HOSTS: List[str] = []
@@ -49,7 +60,7 @@ class PydanticSettings(BaseSettings):
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
-    ROOT_URLCONF: str
+    ROOT_URLCONF: str = "foo"
     TEMPLATES: List[Dict] = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -65,7 +76,7 @@ class PydanticSettings(BaseSettings):
             },
         },
     ]
-    WSGI_APPLICATION: str
+    WSGI_APPLICATION: str = "foo"
     DATABASES: DatabaseSettings = Field({})
     AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
         {
