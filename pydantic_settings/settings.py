@@ -10,14 +10,19 @@ from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
 from .database import DatabaseDsn
 
 
+DEFAULT_SETTINGS_MODULE_FIELD = Field(
+    "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
+)
+
+
 class SetUp(BaseSettings):
-    settings_module: PyObject = Field(
-        "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
-    )
+    settings_module: PyObject = DEFAULT_SETTINGS_MODULE_FIELD
+    settings_module_string: str = DEFAULT_SETTINGS_MODULE_FIELD
 
     def configure(self):
         if not settings.configured:
             settings_dict = self.settings_module().dict()
+
             if settings_dict["BASE_DIR"] is None:
                 base_dir = Path(
                     getsourcefile(SetUp().settings_module)
@@ -26,6 +31,12 @@ class SetUp(BaseSettings):
                 settings_dict["BASE_DIR"] = base_dir
             else:
                 base_dir = settings_dict["BASE_DIR"]
+
+            base_module = self.settings_module_string.rsplit(".", 2)[0]
+            if settings_dict["ROOT_URLCONF"] is None:
+                settings_dict["ROOT_URLCONF"] = ".".join([base_module, "urls"])
+            if settings_dict["WSGI_APPLICATION"] is None:
+                settings_dict["WSGI_APPLICATION"] = ".".join([base_module, "wsgi"])
 
             settings.configure(**settings_dict)
 
@@ -60,7 +71,7 @@ class PydanticSettings(BaseSettings):
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
-    ROOT_URLCONF: str = "foo"
+    ROOT_URLCONF: Optional[str]
     TEMPLATES: List[Dict] = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -76,7 +87,7 @@ class PydanticSettings(BaseSettings):
             },
         },
     ]
-    WSGI_APPLICATION: str = "foo"
+    WSGI_APPLICATION: Optional[str]
     DATABASES: DatabaseSettings = Field({})
     AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
         {
