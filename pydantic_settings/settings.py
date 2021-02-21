@@ -56,63 +56,23 @@ class DatabaseSettings(BaseSettings):
 class PydanticSettings(BaseSettings):
     BASE_DIR: Optional[DirectoryPath]
     SECRET_KEY: str = Field(default_factory=get_random_secret_key)
-    DEBUG: bool = False
-    ALLOWED_HOSTS: List[str] = []
-    INSTALLED_APPS: List[str] = [
-        "django.contrib.admin",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sessions",
-        "django.contrib.messages",
-        "django.contrib.staticfiles",
-    ]
-    MIDDLEWARE: List[str] = [
-        "django.middleware.security.SecurityMiddleware",
-        "django.contrib.sessions.middleware.SessionMiddleware",
-        "django.middleware.common.CommonMiddleware",
-        "django.middleware.csrf.CsrfViewMiddleware",
-        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        "django.contrib.messages.middleware.MessageMiddleware",
-        "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    ]
+    DEBUG: Optional[bool]
+    ALLOWED_HOSTS: Optional[List[str]] = global_settings.ALLOWED_HOSTS
+    INSTALLED_APPS: Optional[List[str]] = global_settings.INSTALLED_APPS
+    MIDDLEWARE: Optional[List[str]] = global_settings.MIDDLEWARE
     ROOT_URLCONF: Optional[str]
-    TEMPLATES: List[Dict] = [
-        {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
-            "DIRS": [],
-            "APP_DIRS": True,
-            "OPTIONS": {
-                "context_processors": [
-                    "django.template.context_processors.debug",
-                    "django.template.context_processors.request",
-                    "django.contrib.auth.context_processors.auth",
-                    "django.contrib.messages.context_processors.messages",
-                ],
-            },
-        },
-    ]
+    TEMPLATES: Optional[List[Dict]] = global_settings.TEMPLATES
     WSGI_APPLICATION: Optional[str]
     DATABASES: DatabaseSettings = Field({})
-    AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
-        {
-            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-        },
-    ]
-    LANGUAGE_CODE: str = "en-us"
-    TIME_ZONE: str = "UTC"
-    USE_I18N: bool = True
-    USE_L10N: bool = True
-    USE_TZ: bool = True
-    STATIC_URL: str = "/static/"
+    AUTH_PASSWORD_VALIDATORS: Optional[
+        List[Dict[str, str]]
+    ] = global_settings.AUTH_PASSWORD_VALIDATORS
+    LANGUAGE_CODE: Optional[str] = global_settings.LANGUAGE_CODE
+    TIME_ZONE: Optional[str] = global_settings.TIME_ZONE
+    USE_I18N: Optional[bool] = global_settings.USE_I18N
+    USE_L10N: Optional[bool] = global_settings.USE_L10N
+    USE_TZ: Optional[bool] = global_settings.USE_TZ
+    STATIC_URL: Optional[str] = global_settings.STATIC_URL
 
     class Config:
         env_prefix = "DJANGO_"
