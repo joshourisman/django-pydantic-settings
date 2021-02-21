@@ -108,11 +108,11 @@ class PydanticSettings(BaseSettings):
     LANGUAGE_COOKIE_AGE: Optional[int] = global_settings.LANGUAGE_COOKIE_AGE
     LANGUAGE_COOKIE_DOMAIN: Optional[str] = global_settings.LANGUAGE_COOKIE_DOMAIN
     LANGUAGE_COOKIE_PATH: Optional[str] = global_settings.LANGUAGE_COOKIE_PATH
-    LANGUAGE_COOKIE_SECURE: Optional[bool] = global_settings.LANGUAGE_COOKIE_SECURE
-    LANGUAGE_COOKIE_HTTPONLY: Optional[bool] = global_settings.LANGUAGE_COOKIE_HTTPONLY
+    LANGUAGE_COOKIE_SECURE: Optional[bool] = global_settings.LANGUAGE_COOKIE_SECURE  # type: ignore
+    LANGUAGE_COOKIE_HTTPONLY: Optional[bool] = global_settings.LANGUAGE_COOKIE_HTTPONLY  # type: ignore
     LANGUAGE_COOKIE_SAMESITE: Optional[
         Literal["Lax", "Strict", "None"]
-    ] = global_settings.LANGUAGE_COOKIE_SAMESITE
+    ] = global_settings.LANGUAGE_COOKIE_SAMESITE  # type: ignore
     USE_L10N: Optional[bool] = global_settings.USE_L10N
     MANAGERS: Optional[List[Tuple[str, EmailStr]]] = global_settings.MANAGERS  # type: ignore
     DEFAULT_CHARSET: Optional[str] = global_settings.DEFAULT_CHARSET
