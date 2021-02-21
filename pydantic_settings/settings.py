@@ -16,10 +16,9 @@ import dj_database_url
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
 from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
-from pydantic.class_validators import make_generic_validator
 from pydantic.main import BaseModel
-from pydantic.networks import AnyUrl, EmailStr, IPvAnyAddress
-from pydantic.types import FilePath, SecretStr
+from pydantic.networks import EmailStr, IPvAnyAddress
+from pydantic.types import FilePath
 
 from .database import DatabaseDsn
 
