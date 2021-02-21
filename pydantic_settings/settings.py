@@ -42,10 +42,13 @@ class SetUp(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    default: DatabaseDsn = Field(env="DATABASE_URL")
+    default: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
 
     @validator("*")
     def format_database_settings(cls, v):
+        if v is None:
+            return {}
+
         return dj_database_url.parse(v)
 
 
@@ -88,7 +91,7 @@ class PydanticSettings(BaseSettings):
         },
     ]
     WSGI_APPLICATION: Optional[str]
-    DATABASES: DatabaseSettings = Field({})
+    DATABASES: Optional[DatabaseSettings] = Field({})
     AUTH_PASSWORD_VALIDATORS: List[Dict[str, str]] = [
         {
             "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
