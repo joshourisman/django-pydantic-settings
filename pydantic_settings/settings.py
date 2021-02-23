@@ -46,10 +46,10 @@ class SetUp(BaseSettings):
                     or "pydantic_settings.settings.PydanticSettings"
                 ).parent.parent.parent
                 settings_dict["BASE_DIR"] = base_dir
+                base_module = self.settings_module_string.rsplit(".", 2)[0]
             else:
-                base_dir = settings_dict["BASE_DIR"]
+                base_module = f'{settings_dict["BASE_DIR"]}'
 
-            base_module = self.settings_module_string.rsplit(".", 2)[0]
             if settings_dict["ROOT_URLCONF"] is None:
                 settings_dict["ROOT_URLCONF"] = ".".join([base_module, "urls"])
             if settings_dict.get("WSGI_APPLICATION") is None:
