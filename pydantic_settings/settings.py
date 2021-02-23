@@ -173,9 +173,9 @@ class PydanticSettings(BaseSettings):
         int
     ] = global_settings.DATA_UPLOAD_MAX_NUMBER_FIELDS
     FILE_UPLOAD_TEMP_DIR: Optional[DirectoryPath] = global_settings.FILE_UPLOAD_TEMP_DIR  # type: ignore
-    FILE_UPLOAD_PERMISSIONS: Optional[str] = global_settings.FILE_UPLOAD_PERMISSIONS
+    FILE_UPLOAD_PERMISSIONS: Optional[int] = global_settings.FILE_UPLOAD_PERMISSIONS
     FILE_UPLOAD_DIRECTORY_PERMISSIONS: Optional[
-        str
+        int
     ] = global_settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS
     FORMAT_MODULE_PATH: Optional[str] = global_settings.FORMAT_MODULE_PATH
     DATE_FORMAT: Optional[str] = global_settings.DATE_FORMAT
