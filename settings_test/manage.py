@@ -2,7 +2,6 @@
 """Django's command-line utility for administrative tasks."""
 import sys
 
-from django.conf import settings
 from pydantic_settings import SetUp
 
 
