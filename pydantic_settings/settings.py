@@ -67,7 +67,7 @@ class DatabaseSettings(BaseSettings):
 
 
 class TemplateBackendModel(BaseModel):
-    BACKEND: PyObject
+    BACKEND: str
     NAME: Optional[str]
     DIRS: Optional[List[DirectoryPath]]
     APP_DIRS: Optional[bool]
@@ -75,7 +75,7 @@ class TemplateBackendModel(BaseModel):
 
 
 class CacheBackendModel(BaseModel):
-    default: Dict[Literal["BACKEND"], PyObject]
+    default: Dict[Literal["BACKEND"], str]
 
 
 class PydanticSettings(BaseSettings):
@@ -118,8 +118,8 @@ class PydanticSettings(BaseSettings):
     SERVER_EMAIL: Optional[Union[EmailStr, Literal["root@localhost"]]] = global_settings.SERVER_EMAIL  # type: ignore
 
     DATABASES: DatabaseSettings = Field({})
-    DATABASE_ROUTERS: Optional[List[PyObject]] = global_settings.DATABASE_ROUTERS  # type: ignore
-    EMAIL_BACKEND: Optional[PyObject] = global_settings.EMAIL_BACKEND  # type: ignore
+    DATABASE_ROUTERS: Optional[List[str]] = global_settings.DATABASE_ROUTERS  # type: ignore
+    EMAIL_BACKEND: Optional[str] = global_settings.EMAIL_BACKEND  # type: ignore
     EMAIL_HOST: Optional[str] = global_settings.EMAIL_HOST
     EMAIL_PORT: Optional[int] = global_settings.EMAIL_PORT
     EMAIL_USE_LOCALTIME: Optional[bool] = global_settings.EMAIL_USE_LOCALTIME
@@ -130,9 +130,9 @@ class PydanticSettings(BaseSettings):
     EMAIL_SSL_CERTFILE: Optional[FilePath] = global_settings.EMAIL_SSL_CERTFILE  # type: ignore
     EMAIL_SSL_KEYFILE: Optional[FilePath] = global_settings.EMAIL_SSL_KEYFILE  # type: ignore
     EMAIL_TIMEOUT: Optional[int] = global_settings.EMAIL_TIMEOUT
-    INSTALLED_APPS: Optional[List[PyObject]] = global_settings.INSTALLED_APPS  # type: ignore
+    INSTALLED_APPS: Optional[List[str]] = global_settings.INSTALLED_APPS  # type: ignore
     TEMPLATES: Optional[List[TemplateBackendModel]] = global_settings.TEMPLATES  # type: ignore
-    FORM_RENDERER: Optional[PyObject] = global_settings.FORM_RENDERER  # type: ignore
+    FORM_RENDERER: Optional[str] = global_settings.FORM_RENDERER  # type: ignore
     DEFAULT_FROM_EMAIL: Optional[str] = global_settings.DEFAULT_FROM_EMAIL
     EMAIL_SUBJECT_PREFIX: Optional[str] = global_settings.EMAIL_SUBJECT_PREFIX
     APPEND_SLASH: Optional[bool] = global_settings.APPEND_SLASH
@@ -146,12 +146,12 @@ class PydanticSettings(BaseSettings):
     ] = global_settings.ABSOLUTE_URL_OVERRIDES
     IGNORABLE_404_URLS: Optional[List[Pattern]] = global_settings.IGNORABLE_404_URLS
     SECRET_KEY: str = Field(default_factory=get_random_secret_key)
-    DEFAULT_FILE_STORAGE: Optional[PyObject] = global_settings.DEFAULT_FILE_STORAGE  # type: ignore
+    DEFAULT_FILE_STORAGE: Optional[str] = global_settings.DEFAULT_FILE_STORAGE  # type: ignore
     MEDIA_ROOT: Optional[str] = global_settings.MEDIA_ROOT
     MEDIA_URL: Optional[str] = global_settings.MEDIA_URL
     STATIC_ROOT: Optional[DirectoryPath] = global_settings.STATIC_ROOT  # type: ignore
     STATIC_URL: Optional[str] = global_settings.STATIC_URL
-    FILE_UPLOAD_HANDLERS: Optional[List[PyObject]] = global_settings.FILE_UPLOAD_HANDLERS  # type: ignore
+    FILE_UPLOAD_HANDLERS: Optional[List[str]] = global_settings.FILE_UPLOAD_HANDLERS  # type: ignore
     FILE_UPLOAD_MAX_MEMORY_SIZE: Optional[
         int
     ] = global_settings.FILE_UPLOAD_MAX_MEMORY_SIZE
@@ -166,7 +166,7 @@ class PydanticSettings(BaseSettings):
     FILE_UPLOAD_DIRECTORY_PERMISSIONS: Optional[
         str
     ] = global_settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS  # type: ignore
-    FORMAT_MODULE_PATH: Optional[PyObject] = global_settings.FORMAT_MODULE_PATH  # type: ignore
+    FORMAT_MODULE_PATH: Optional[str] = global_settings.FORMAT_MODULE_PATH  # type: ignore
     DATE_FORMAT: Optional[str] = global_settings.DATE_FORMAT
     DATETIME_FORMAT: Optional[str] = global_settings.DATETIME_FORMAT
     TIME_FORMAT: Optional[str] = global_settings.TIME_FORMAT
@@ -186,14 +186,14 @@ class PydanticSettings(BaseSettings):
     X_FRAME_OPTIONS: Optional[str] = global_settings.X_FRAME_OPTIONS
     USE_X_FORWARDED_HOST: Optional[bool] = global_settings.USE_X_FORWARDED_HOST
     USE_X_FORWARDED_PORT: Optional[bool] = global_settings.USE_X_FORWARDED_PORT
-    WSGI_APPLICATION: Optional[PyObject]
+    WSGI_APPLICATION: Optional[str]
     SECURE_PROXY_SSL_HEADER: Optional[
         Tuple[str, str]
     ] = global_settings.SECURE_PROXY_SSL_HEADER
     DEFAULT_HASHING_ALGORITHM: Optional[
         Literal["sha1", "sha256"]
     ] = global_settings.DEFAULT_HASHING_ALGORITHM  # type: ignore
-    MIDDLEWARE: Optional[List[PyObject]] = global_settings.MIDDLEWARE  # type: ignore
+    MIDDLEWARE: Optional[List[str]] = global_settings.MIDDLEWARE  # type: ignore
     SESSION_CACHE_ALIAS: Optional[str] = global_settings.SESSION_CACHE_ALIAS
     SESSION_COOKIE_NAME: Optional[str] = global_settings.SESSION_COOKIE_NAME
     SESSION_COOKIE_AGE: Optional[int] = global_settings.SESSION_COOKIE_AGE
@@ -212,7 +212,7 @@ class PydanticSettings(BaseSettings):
     ] = global_settings.SESSION_EXPIRE_AT_BROWSER_CLOSE
     SESSION_ENGINE: Optional[str] = global_settings.SESSION_ENGINE  # type: ignore
     SESSION_FILE_PATH: Optional[DirectoryPath] = global_settings.SESSION_FILE_PATH  # type: ignore
-    SESSION_SERIALIZER: Optional[PyObject] = global_settings.SESSION_SERIALIZER  # type: ignore
+    SESSION_SERIALIZER: Optional[str] = global_settings.SESSION_SERIALIZER  # type: ignore
     CACHES: Optional[CacheBackendModel] = global_settings.CACHES  # type: ignore
     CACHE_MIDDLEWARE_KEY_PREFIX: Optional[
         str
@@ -229,12 +229,12 @@ class PydanticSettings(BaseSettings):
         int
     ] = global_settings.PASSWORD_RESET_TIMEOUT_DAYS
     PASSWORD_RESET_TIMEOUT: Optional[int] = global_settings.PASSWORD_RESET_TIMEOUT  # type: ignore
-    PASSWORD_HASHERS: Optional[List[PyObject]] = global_settings.PASSWORD_HASHERS  # type: ignore
+    PASSWORD_HASHERS: Optional[List[str]] = global_settings.PASSWORD_HASHERS  # type: ignore
     AUTH_PASSWORD_VALIDATORS: Optional[
         List[dict]
     ] = global_settings.AUTH_PASSWORD_VALIDATORS
-    SIGNING_BACKEND: Optional[PyObject] = global_settings.SIGNING_BACKEND  # type: ignore
-    CSRF_FAILURE_VIEW: Optional[PyObject] = global_settings.CSRF_FAILURE_VIEW  # type: ignore
+    SIGNING_BACKEND: Optional[str] = global_settings.SIGNING_BACKEND  # type: ignore
+    CSRF_FAILURE_VIEW: Optional[str] = global_settings.CSRF_FAILURE_VIEW  # type: ignore
     CSRF_COOKIE_NAME: Optional[str] = global_settings.CSRF_COOKIE_NAME
     CSRF_COOKIE_AGE: Optional[int] = global_settings.CSRF_COOKIE_AGE
     CSRF_COOKIE_DOMAIN: Optional[str] = global_settings.CSRF_COOKIE_DOMAIN
@@ -248,21 +248,21 @@ class PydanticSettings(BaseSettings):
     CSRF_TRUSTED_ORIGINS: Optional[List[str]] = global_settings.CSRF_TRUSTED_ORIGINS
     CSRF_USE_SESSIONS: Optional[bool] = global_settings.CSRF_USE_SESSIONS
     MESSAGE_STORAGE: Optional[str] = global_settings.MESSAGE_STORAGE
-    LOGGING_CONFIG: Optional[PyObject] = global_settings.LOGGING_CONFIG  # type: ignore
+    LOGGING_CONFIG: Optional[str] = global_settings.LOGGING_CONFIG  # type: ignore
     LOGGING: Optional[dict] = global_settings.LOGGING
-    DEFAULT_EXCEPTION_REPORTER: Optional[PyObject] = global_settings.DEFAULT_EXCEPTION_REPORTER  # type: ignore
+    DEFAULT_EXCEPTION_REPORTER: Optional[str] = global_settings.DEFAULT_EXCEPTION_REPORTER  # type: ignore
     DEFAULT_EXCEPTION_REPORTER_FILTER: Optional[
-        PyObject
+        str
     ] = global_settings.DEFAULT_EXCEPTION_REPORTER_FILTER  # type: ignore
-    TEST_RUNNER: Optional[PyObject] = global_settings.TEST_RUNNER  # type: ignore
+    TEST_RUNNER: Optional[str] = global_settings.TEST_RUNNER  # type: ignore
     TEST_NON_SERIALIZED_APPS: Optional[
         List[str]
     ] = global_settings.TEST_NON_SERIALIZED_APPS
     FIXTURE_DIRS: Optional[List[DirectoryPath]] = global_settings.FIXTURE_DIRS  # type: ignore
     STATICFILES_DIRS: Optional[List[DirectoryPath]] = global_settings.STATICFILES_DIRS  # type: ignore
-    STATICFILES_STORAGE: Optional[PyObject] = global_settings.STATICFILES_STORAGE  # type: ignore
+    STATICFILES_STORAGE: Optional[str] = global_settings.STATICFILES_STORAGE  # type: ignore
     STATICFILES_FINDERS: Optional[
-        List[PyObject]
+        List[str]
     ] = global_settings.STATICFILES_FINDERS  # type: ignore
     MIGRATION_MODULES: Optional[Dict[str, str]] = global_settings.MIGRATION_MODULES
     SILENCED_SYSTEM_CHECKS: Optional[List[str]] = global_settings.SILENCED_SYSTEM_CHECKS
