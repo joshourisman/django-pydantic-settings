@@ -1,6 +1,4 @@
 import json
-import os
-from unittest.mock import patch
 
 from django.conf import settings
 from django.utils.functional import empty
@@ -15,75 +13,60 @@ def test_no_env():
     assert settings.DATABASES == {}
 
 
-@patch.dict(os.environ, clear=True, DATABASE_URL="sqlite:///foo")
-def test_env_loaded():
+def test_env_loaded(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "sqlite:///foo")
     settings._wrapped = empty
     SetUp().configure()
 
     assert settings.DATABASES["default"]["NAME"] == "foo"
 
 
-@patch.dict(os.environ, clear=True, DATABASE_URL="sqlite:///bar")
-def test_env_loaded2():
+def test_env_loaded2(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "sqlite:///bar")
     settings._wrapped = empty
     SetUp().configure()
 
     assert settings.DATABASES["default"]["NAME"] == "bar"
 
 
-@patch.dict(
-    os.environ,
-    clear=True,
-    DJANGO_ALLOWED_HOSTS='["*", "127.0.0.1", ".localhost", "[::1]"]',
-    DATABASE_URL="sqlite:///bar",
-)
-def test_allowed_hosts():
+def test_allowed_hosts(monkeypatch):
+    monkeypatch.setenv(
+        "DJANGO_ALLOWED_HOSTS", '["*", "127.0.0.1", ".localhost", "[::1]"]'
+    )
     settings._wrapped = empty
     SetUp().configure()
 
     assert settings.DEBUG is False
 
 
-@patch.dict(
-    os.environ,
-    clear=True,
-    DJANGO_LANGUAGE_COOKIE_PATH="/foo/bar",
-    DATABASE_URL="sqlite:///foo",
-)
-def test_language_cookie_path():
+def test_language_cookie_path(monkeypatch):
+    monkeypatch.setenv("DJANGO_LANGUAGE_COOKIE_PATH", "/foo/bar")
     settings._wrapped = empty
     SetUp().configure()
 
     assert settings.LANGUAGE_COOKIE_PATH == "/foo/bar"
 
 
-@patch.dict(
-    os.environ,
-    clear=True,
-    DJANGO_EMAIL_HOST_PASSWORD="password1",
-    DATABASE_URL="sqlite:///foo",
-)
-def test_email_host_password():
+def test_email_host_password(monkeypatch):
+    monkeypatch.setenv("DJANGO_EMAIL_HOST_PASSWORD", "password1")
     settings._wrapped = empty
     SetUp().configure()
 
     assert settings.EMAIL_HOST_PASSWORD == "password1"
 
 
-@patch.dict(
-    os.environ,
-    clear=True,
-    DJANGO_TEMPLATES=json.dumps(
-        [
-            {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "APP_DIRS": True,
-            }
-        ]
-    ),
-    DATABASE_URL="sqlite:///foo",
-)
-def test_templates_settings():
+def test_templates_settings(monkeypatch):
+    monkeypatch.setenv(
+        "DJANGO_TEMPLATES",
+        json.dumps(
+            [
+                {
+                    "BACKEND": "django.template.backends.django.DjangoTemplates",
+                    "APP_DIRS": True,
+                }
+            ]
+        ),
+    )
     settings._wrapped = empty
     SetUp().configure()
 
