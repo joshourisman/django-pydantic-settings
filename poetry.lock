@@ -469,7 +469,7 @@ python-versions = "*"
 name = "typing-extensions"
 version = "3.7.4.3"
 description = "Backported and Experimental Type Hints for Python 3.5+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -524,7 +524,7 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "3ed553cf6be23dd98664b4f342e7ce6588e80b7b48ec82abdb8742d5630f2224"
+content-hash = "9b4efae06240004661eda6dc4c1141a27b26c4fdc32cb234cbafcf64ab39ee83"
 
 [metadata.files]
 appdirs = [
