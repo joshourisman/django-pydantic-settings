@@ -53,7 +53,9 @@ class SetUp(BaseSettings):
             if settings_dict["ROOT_URLCONF"] is None:
                 settings_dict["ROOT_URLCONF"] = ".".join([base_module, "urls"])
             if settings_dict.get("WSGI_APPLICATION") is None:
-                settings_dict["WSGI_APPLICATION"] = ".".join([base_module, "wsgi"])
+                settings_dict["WSGI_APPLICATION"] = ".".join(
+                    [base_module, "wsgi", "application"]
+                )
 
             settings.configure(**settings_dict)
 
