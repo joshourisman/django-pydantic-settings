@@ -1,16 +1,11 @@
 from inspect import getsourcefile
 from pathlib import Path
-from typing import (
-    Callable,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Pattern,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import Callable, Dict, List, Optional, Pattern, Sequence, Tuple, Union
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import dj_database_url
 from django.conf import global_settings, settings
