@@ -104,7 +104,7 @@ class PydanticSettings(BaseSettings):
     # Validate LANGUAGE_CODE and LANGUAGES_BIDI against LANGUAGES.
     LANGUAGE_CODE: Optional[str] = global_settings.LANGUAGE_CODE
     LANGUAGES: Optional[List[Tuple[str, str]]] = global_settings.LANGUAGES
-    LANGUAGES_BIDI: Optional[List[str]]
+    LANGUAGES_BIDI: Optional[List[str]] = global_settings.LANGUAGES_BIDI
 
     USE_I18N: Optional[bool] = global_settings.USE_I18N
     LOCALE_PATHS: Optional[List[DirectoryPath]] = global_settings.LOCALE_PATHS  # type: ignore
