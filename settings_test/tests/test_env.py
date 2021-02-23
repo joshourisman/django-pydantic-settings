@@ -1,6 +1,8 @@
 import json
+from pathlib import Path
 
 from django.conf import settings
+from django.test import Client
 from django.utils.functional import empty
 from pydantic_settings import SetUp
 
@@ -74,3 +76,27 @@ def test_templates_settings(monkeypatch):
         settings.TEMPLATES[0]["BACKEND"]
         == "django.template.backends.django.DjangoTemplates"
     )
+
+
+def test_base_dir(monkeypatch):
+    monkeypatch.setenv("DJANGO_BASE_DIR", "settings_test")
+
+    settings._wrapped = empty
+    SetUp().configure()
+
+    assert settings.BASE_DIR == Path("settings_test")
+    assert settings.ROOT_URLCONF == "settings_test.urls"
+    assert settings.WSGI_APPLICATION == "settings_test.wsgi.application"
+
+
+def test_http(monkeypatch):
+    monkeypatch.setenv("DJANGO_BASE_DIR", "settings_test")
+    monkeypatch.setenv("DJANGO_DEBUG", "True")
+
+    settings._wrapped = empty
+    SetUp().configure()
+
+    client = Client()
+    response = client.get("/")
+
+    assert response.json()["success"] is True
