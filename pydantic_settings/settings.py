@@ -304,3 +304,10 @@ class PydanticSettings(BaseSettings):
 
     class Config:
         env_prefix = "DJANGO_"
+
+    @validator("DATABASES")
+    def remove_empty_database_dicts(cls, v):
+        if v is None:
+            return {}
+
+        return {key: value for key, value in v.dict().items() if value != {}}
