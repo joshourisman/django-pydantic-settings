@@ -59,10 +59,13 @@ class SetUp(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    default: DatabaseDsn = Field(env="DATABASE_URL")
+    default: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
 
     @validator("*")
     def format_database_settings(cls, v):
+        if v is None:
+            return {}
+
         return dj_database_url.parse(v)
 
 
@@ -117,7 +120,7 @@ class PydanticSettings(BaseSettings):
     DEFAULT_CHARSET: Optional[str] = global_settings.DEFAULT_CHARSET
     SERVER_EMAIL: Optional[Union[EmailStr, Literal["root@localhost"]]] = global_settings.SERVER_EMAIL  # type: ignore
 
-    DATABASES: DatabaseSettings = Field({})
+    DATABASES: Optional[DatabaseSettings] = Field({})
     DATABASE_ROUTERS: Optional[List[str]] = global_settings.DATABASE_ROUTERS  # type: ignore
     EMAIL_BACKEND: Optional[str] = global_settings.EMAIL_BACKEND  # type: ignore
     EMAIL_HOST: Optional[str] = global_settings.EMAIL_HOST
