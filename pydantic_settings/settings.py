@@ -1,3 +1,4 @@
+import urllib.parse
 from inspect import getsourcefile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Pattern, Sequence, Tuple, Union
@@ -16,7 +17,6 @@ from pydantic.networks import EmailStr, IPvAnyAddress
 from pydantic.types import FilePath
 
 from .database import DatabaseDsn
-
 
 DEFAULT_SETTINGS_MODULE_FIELD = Field(
     "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
@@ -64,7 +64,9 @@ class DatabaseSettings(BaseSettings):
         if v is None:
             return {}
 
-        return dj_database_url.parse(v)
+        config = dj_database_url.parse(v)
+        config["HOST"] = urllib.parse.unquote(config["HOST"])
+        return config
 
 
 class TemplateBackendModel(BaseModel):

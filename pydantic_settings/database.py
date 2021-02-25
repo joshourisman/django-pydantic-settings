@@ -58,4 +58,7 @@ class DatabaseDsn(AnyUrl):
         if host is None:
             return None, None, "file", False
 
+        if host.startswith("%2F"):
+            return host, None, "socket", False
+
         return super().validate_host(parts)
