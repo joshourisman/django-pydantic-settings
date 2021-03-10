@@ -102,11 +102,31 @@ def test_http(monkeypatch):
     assert response.json()["success"] is True
 
 
-def test_gcp_cloudsql_socket(monkeypatch):
+def test_escaped_gcp_cloudsql_socket(monkeypatch):
     monkeypatch.setenv("DJANGO_BASE_DIR", "settings_test")
     monkeypatch.setenv(
         "DATABASE_URL",
         "postgres://username:password@%2Fcloudsql%2Fproject%3Aregion%3Ainstance/database",
+    )
+
+    settings._wrapped = empty
+    SetUp().configure()
+
+    assert "default" in settings.DATABASES
+
+    default = settings.DATABASES["default"]
+    assert default["NAME"] == "database"
+    assert default["USER"] == "username"
+    assert default["PASSWORD"] == "password"
+    assert default["HOST"] == "/cloudsql/project:region:instance"
+    assert default["ENGINE"] == "django.db.backends.postgresql_psycopg2"
+
+
+def test_unescaped_gcp_cloudsql_socket(monkeypatch):
+    monkeypatch.setenv("DJANGO_BASE_DIR", "settings_test")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgres://username:password@/cloudsql/project:region:instance/database",
     )
 
     settings._wrapped = empty
