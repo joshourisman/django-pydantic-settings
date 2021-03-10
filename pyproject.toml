@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-pydantic-settings"
-version = "0.3.0"
+version = "0.4.0"
 description = "Manage Django settings with Pydantic."
 authors = ["Josh Ourisman <me@josho.io>"]
 license = "MIT"
@@ -10,11 +10,11 @@ repository = "https://github.com/joshourisman/django-pydantic-settings"
 packages = [{ include = "pydantic_settings" }]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.1"
 Django = ">=1.11"
 dj-database-url = "^0.5.0"
 sentry-sdk = { version = "*", optional = true }
-pydantic = { version = "^1.7.3", extras = ["email"] }
+pydantic = { version = "^1.8", extras = ["email"] }
 typing-extensions = { version = "^3.7.4", python = '<2.8' }
 
 [tool.poetry.extras]
