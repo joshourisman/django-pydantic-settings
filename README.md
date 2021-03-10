@@ -2,7 +2,7 @@
 
 ## Use pydantic settings management to simplify configuration of Django settings.
 
-Very much a work in progress, but reads the standard DJANGO_SETTINGS_MODULE environment variable (defaulting to pydantic_settings.Settings) to load a sub-class of pydantic_settings.Settings. All settings (that have been defined in pydantic_settings.Settings) can be overridden with environment variables. A special DatabaseSettings class is used to allow multiple databases to be configured simply with DSNs. In theory, django-pydantic-settings should be compatible with any version of Django that runs on Python 3.6+ (which means Django 1.11 and on), but is only tested against officially supported versions (currently 2.2, 3.0, and 3.1).
+Very much a work in progress, but reads the standard DJANGO_SETTINGS_MODULE environment variable (defaulting to pydantic_settings.settings.PydanticSettings) to load a sub-class of pydantic_settings.Settings. All settings (that have been defined in pydantic_settings.Settings) can be overridden with environment variables. A special DatabaseSettings class is used to allow multiple databases to be configured simply with DSNs. In theory, django-pydantic-settings should be compatible with any version of Django that runs on Python 3.6+ (which means Django 1.11 and on), but is only tested against officially supported versions (currently 2.2, 3.0, and 3.1).
 
 ## Installation & Setup
 
@@ -62,7 +62,7 @@ The other setting worth thinking about is `SECRET_KEY`. By default, `SECRET_KEY`
 
 ## Database configuration
 
-By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` class, you can easily configure one or more database connections with environment variables. DSNs are parsed using dj-database-url.
+By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` class, you can easily configure one or more database connections with environment variables. DSNs are parsed using dj-database-url. In order to support Google Cloud SQL database connections from within Google Cloud Run, the DatabaseDsn type will detect and automatically escape DSN strings of the form `postgres://username:password@/cloudsql/project:region:instance/database` so that they can be properly handled by dj-database-url.
 
 ```python
 class DatabaseSettings(BaseSettings):
@@ -71,38 +71,27 @@ class DatabaseSettings(BaseSettings):
 ```
 
 ```python
-❯ DATABASE_URL=sqlite:///foo SECONDARY_DATABASE_URL=sqlite:///bar ./settings_test/manage.py shell
-Python 3.9.1 (default, Jan  8 2021, 17:17:43)
-[Clang 12.0.0 (clang-1200.0.32.28)] on darwin
+❯ DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo poetry run python settings_test/manage.py shell
+Python 3.9.1 (default, Jan 12 2021, 16:45:25) 
+[GCC 8.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 (InteractiveConsole)
+>>> from rich import print
 >>> from django.conf import settings
-...
->>> pp.pprint(settings.DATABASES)
-{   'default': {   'ATOMIC_REQUESTS': False,
-                   'AUTOCOMMIT': True,
-                   'CONN_MAX_AGE': 0,
-                   'ENGINE': 'django.db.backends.sqlite3',
-                   'HOST': '',
-                   'NAME': 'foo',
-                   'OPTIONS': {},
-                   'PASSWORD': '',
-                   'PORT': '',
-                   'TEST': {   'CHARSET': None,
-                               'COLLATION': None,
-                               'MIGRATE': True,
-                               'MIRROR': None,
-                               'NAME': None},
-                   'TIME_ZONE': None,
-                   'USER': ''},
-    'secondary': {   'CONN_MAX_AGE': 0,
-                     'ENGINE': 'django.db.backends.sqlite3',
-                     'HOST': '',
-                     'NAME': 'bar',
-                     'PASSWORD': '',
-                     'PORT': '',
-                     'USER': ''}}
->>>
+>>> print(settings.DATABASES)
+{
+    'default': {
+        'NAME': 'database',
+        'USER': 'username',
+        'PASSWORD': 'password',
+        'HOST': '/cloudsql/project:region:instance',
+        'PORT': '',
+        'CONN_MAX_AGE': 0,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2'
+    },
+    'secondary': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
+}
+>>> 
 ```
 
 ## Sentry configuration
