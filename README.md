@@ -2,7 +2,7 @@
 
 ## Use pydantic settings management to simplify configuration of Django settings.
 
-Very much a work in progress, but reads the standard DJANGO_SETTINGS_MODULE environment variable (defaulting to pydantic_settings.settings.PydanticSettings) to load a sub-class of pydantic_settings.Settings. All settings (that have been defined in pydantic_settings.Settings) can be overridden with environment variables. A special DatabaseSettings class is used to allow multiple databases to be configured simply with DSNs. In theory, django-pydantic-settings should be compatible with any version of Django that runs on Python 3.6.1+ (which means Django 1.11 and on), but is only tested against officially supported versions (currently 2.2, 3.0, and 3.1).
+Very much a work in progress, but reads the standard DJANGO_SETTINGS_MODULE environment variable (defaulting to pydantic_settings.settings.PydanticSettings) to load a sub-class of pydantic_settings.Settings. All settings (that have been defined in pydantic_settings.Settings) can be overridden with environment variables. A special DatabaseSettings class is used to allow multiple databases to be configured simply with DSNs. In theory, django-pydantic-settings should be compatible with any version of Django that runs on Python 3.6.1+ (which means Django 1.11 and on), but is only tested against officially supported versions (currently 2.2, 3.0, 3.1, and 3.2).
 
 Note: as of django-pydantic-settings 0.4.0, Pydantic 1.8+ is required, which means Python 3.6.1+ is also required. If you need to use Python 3.6, you'll need to stick with django-pydantic-settings <0.4.0.
 
