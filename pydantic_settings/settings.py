@@ -216,7 +216,7 @@ class PydanticSettings(BaseSettings):
     SESSION_COOKIE_HTTPONLY: Optional[bool] = global_settings.SESSION_COOKIE_HTTPONLY
     SESSION_COOKIE_SAMESITE: Optional[
         Literal["Lax", "Strict", "None"]
-    ] = global_settings.SESSION_COOKIE_SAMESITE  # type: ignore
+    ] = _get_default_setting("SESSION_COOKIE_SAMESITE")  # type: ignore
     SESSION_SAVE_EVERY_REQUEST: Optional[
         bool
     ] = global_settings.SESSION_SAVE_EVERY_REQUEST
