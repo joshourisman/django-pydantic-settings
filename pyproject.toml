@@ -23,7 +23,7 @@ sentry = ["sentry-sdk"]
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
 pytest-dotenv = "^0.5.2"
-tox = "^3.24.2"
+tox = "^3.24.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
