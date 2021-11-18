@@ -12,7 +12,7 @@ jobs:
     name: Python ${{ matrix.python-version }} Tests
     steps:
     - uses: actions/checkout@v2.4.0
-    - uses: actions/setup-python@v2.2.2
+    - uses: actions/setup-python@v2.3.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
