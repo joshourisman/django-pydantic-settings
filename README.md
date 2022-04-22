@@ -56,6 +56,21 @@ application = get_wsgi_application()
 
 The `SetUp` class will automatically look for the standard `DJANGO_SETTINGS_MODULE` environment variable, read it, confirm that it points to an existing Python module, and load that module. Your `DJANGO_SETTINGS_MODULE` variable should point to a `pydantic_settings.settings.PydanticSettings` sub-class (though technically any Python class that defines a `dict()` method which returns a Python dictionary of key/value pairs matching the required Django settings will work). Calling the `configure()` method will then use the specified module to configure your project's Django settings.
 
+If your project uses a package to specify multiple different settings classes, simply set `DJANGO_SETTINGS_MODULE` to be the full path to the desired settings class. For example, given the following directory structure:
+
+```
+my_project/
+├─ settings/
+│  ├─ __init__.py
+│  ├─ base.py
+│  ├─ local.py
+│  ├─ production.py
+├─ my_app/
+
+```
+
+To use a settings class called `MyLocal` in `local.py` you would set your `DJANGO_SETTINGS_MODULE` to `my_project.settings.local.MyLocal`.
+
 ## Required settings
 
 There are no settings that must be configured in order to use Django with django-pydantic-settings. All of the possible settings defined by Django ([Settings Reference](https://docs.djangoproject.com/en/3.1/ref/settings/)) are configured in the `pydantic_settings.settings.PydanticSettings` class, using their normal default values provided by Django, or a reasonable calculated value. Settings worth thinking about are `ROOT_URLCONF` and `WSGI_APPLICATION`, which, unless otherwise specified, are calculated based on your `DJANGO_SETTINGS_MODULE` assuming that you're using the default Django project layout a provided by `django-admin.py startproject`. So, for example, if your `DJANGO_SETINGS_MODULE` is set to `my_awesome_project.settings.PydanticSettingsSubclass`, then `ROOT_URLCONF` and `WSGI_APPLICATION` will be set to `my_awesome_project.urls` and `my_awesome_project.wsgi` respectively. This default behavior can be overridden by simply specifying `ROOT_URLCONF:str = 'the_actual_urlconf'` and `WSGI_APPLICATION:str = 'the_actual_wsgi_file.application'` in your `PydanticSettings` sub-class. Alternatively, rather than individually settings the `ROOT_URLCONF` and `WSGI_APPLICATION` settings, you can set `BASE_DIR`, and that will be used instead of `DJANGO_SETTINGS_MODULE`.
