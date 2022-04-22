@@ -127,7 +127,7 @@ def test_escaped_gcp_cloudsql_socket(monkeypatch):
     assert default["USER"] == "username"
     assert default["PASSWORD"] == "password"
     assert default["HOST"] == "/cloudsql/project:region:instance"
-    assert default["ENGINE"] == "django.db.backends.postgresql_psycopg2"
+    assert default["ENGINE"] == "django.db.backends.postgresql"
 
 
 def test_unescaped_gcp_cloudsql_socket(monkeypatch):
@@ -147,4 +147,4 @@ def test_unescaped_gcp_cloudsql_socket(monkeypatch):
     assert default["USER"] == "username"
     assert default["PASSWORD"] == "password"
     assert default["HOST"] == "/cloudsql/project:region:instance"
-    assert default["ENGINE"] == "django.db.backends.postgresql_psycopg2"
+    assert default["ENGINE"] == "django.db.backends.postgresql"
