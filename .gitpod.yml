@@ -1,0 +1,13 @@
+github:
+  prebuilds:
+    branches: true
+gitConfig:
+  alias.st: status
+image:
+  file: .gitpod.Dockerfile
+tasks:
+  - init: |
+      poetry config virtualenvs.in-project true
+      poetry install
+    command: |
+      poetry shell
