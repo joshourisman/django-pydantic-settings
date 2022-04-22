@@ -8,7 +8,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-import dj_database_url
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
 from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
@@ -64,9 +63,28 @@ class DatabaseSettings(BaseSettings):
         if v is None:
             return {}
 
-        config = dj_database_url.parse(v)
-        config["HOST"] = urllib.parse.unquote(config["HOST"])
-        return config
+        engines = {
+            'postgres': 'django.db.backends.postgresql',
+            'postgis': 'django.contrib.gis.db.backends.postgis',
+            'mssql': 'sql_server.pyodbc',
+            'mysql': 'django.db.backends.mysql',
+            'mysqlgis': 'django.contrib.gis.db.backends.mysql',
+            'sqlite': 'django.db.backends.sqlite3',
+            'spatialite': 'django.contrib.gis.db.backends.spatialite',
+            'oracle': 'django.db.backends.oracle',
+            'oraclegis': 'django.contrib.gis.db.backends.oracle',
+            'redshift': 'django_redshift_backend',
+        }
+
+        return {
+            'NAME': v.path.lstrip('/') if v.path else '',
+            'USER': v.user or '',
+            'PASSWORD': v.password or '',
+            'HOST': urllib.parse.unquote(v.host) if v.host else '',
+            'PORT': v.port or '',
+            'CONN_MAX_AGE': 0,
+            'ENGINE': engines[v.scheme],
+        }
 
 
 class TemplateBackendModel(BaseModel):

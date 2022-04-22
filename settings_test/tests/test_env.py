@@ -31,6 +31,14 @@ def test_env_loaded2(monkeypatch):
     assert settings.DATABASES["default"]["NAME"] == "bar"
 
 
+def test_database_port(monkeypatch):
+    monkeypatch.setenv('DATABASE_URL', 'postgres://foo:bar@foo.com:6543/database')
+    settings._wrapped = empty
+    SetUp().configure()
+
+    assert settings.DATABASES['default']['PORT'] == '6543'
+
+
 def test_allowed_hosts(monkeypatch):
     monkeypatch.setenv(
         "DJANGO_ALLOWED_HOSTS", '["*", "127.0.0.1", ".localhost", "[::1]"]'
