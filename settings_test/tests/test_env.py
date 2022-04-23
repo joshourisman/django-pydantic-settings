@@ -48,8 +48,8 @@ def test_multiple_databases(monkeypatch):
     settings._wrapped = empty
     SetUp().configure()
 
-    assert "DEFAULT" in settings.DATABASES
-    assert "SECONDARY" in settings.DATABASES
+    assert "default" in settings.DATABASES
+    assert "secondary" in settings.DATABASES
 
 
 def test_allowed_hosts(monkeypatch):
