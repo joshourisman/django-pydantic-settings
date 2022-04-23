@@ -5,8 +5,8 @@ from pydantic_settings.database import DatabaseDsn
 
 
 class Databases(DatabaseSettings):
-    DEFAULT: DatabaseDsn = Field(env="DATABASE_URL")
-    SECONDARY: DatabaseDsn = Field(env="SECONDARY_DATABASE_URL")
+    default: DatabaseDsn = Field(env="DATABASE_URL")
+    secondary: DatabaseDsn = Field(env="SECONDARY_DATABASE_URL")
 
 
 class TestSettings(PydanticSettings):
