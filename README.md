@@ -79,12 +79,16 @@ The other setting worth thinking about is `SECRET_KEY`. By default, `SECRET_KEY`
 
 ## Database configuration
 
-By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` class, you can easily configure one or more database connections with environment variables. DSNs are parsed using dj-database-url. In order to support Google Cloud SQL database connections from within Google Cloud Run, the DatabaseDsn type will detect and automatically escape DSN strings of the form `postgres://username:password@/cloudsql/project:region:instance/database` so that they can be properly handled by dj-database-url.
+By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` sub-class, you can easily configure one or more database connections with environment variables. Google Cloud SQL database connections from within Google Cloud Run are supported; the DatabaseDsn type will detect and automatically escape DSN strings of the form `postgres://username:password@/cloudsql/project:region:instance/database` so that they can be properly handled. The below example is taken from the test project in this repository, and shows a working multi-database configuration file. In this example, the value for `DJANGO_SETTINGS_MODULE` should be set, as below, to `settings_test.database_settings.TestSettings`.
 
 ```python
-class DatabaseSettings(BaseSettings):
-    default: DatabaseDsn = Field(env="DATABASE_URL")
-    secondary: DatabaseDsn = Field(env="SECONDARY_DATABASE_URL")
+class Databases(DatabaseSettings):
+    DEFAULT: DatabaseDsn = Field(env="DATABASE_URL")
+    SECONDARY: DatabaseDsn = Field(env="SECONDARY_DATABASE_URL")
+
+
+class TestSettings(PydanticSettings):
+    DATABASES: Databases = Field({})
 ```
 
 ```python
