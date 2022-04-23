@@ -109,16 +109,7 @@ Type "help", "copyright", "credits" or "license" for more information.
         'CONN_MAX_AGE': 0,
         'ENGINE': 'django.db.backends.postgresql'
     },
-    'DEFAULT': {
-        'NAME': 'database',
-        'USER': 'username',
-        'PASSWORD': 'password',
-        'HOST': '/cloudsql/project:region:instance',
-        'PORT': '',
-        'CONN_MAX_AGE': 0,
-        'ENGINE': 'django.db.backends.postgresql'
-    },
-    'SECONDARY': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
+    'secondary': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
 }
 >>>
 ```
