@@ -2,9 +2,9 @@
 
 ## Use pydantic settings management to simplify configuration of Django settings.
 
-Very much a work in progress, but reads the standard DJANGO_SETTINGS_MODULE environment variable (defaulting to pydantic_settings.settings.PydanticSettings) to load a sub-class of pydantic_settings.Settings. All settings (that have been defined in pydantic_settings.Settings) can be overridden with environment variables. A special DatabaseSettings class is used to allow multiple databases to be configured simply with DSNs. In theory, django-pydantic-settings should be compatible with any version of Django that runs on Python 3.6.1+ (which means Django 1.11 and on), but is only tested against officially supported versions (currently 2.2, 3.0, 3.1, and 3.2).
+Very much a work in progress, but reads the standard DJANGO_SETTINGS_MODULE environment variable (defaulting to pydantic_settings.settings.PydanticSettings) to load a sub-class of pydantic_settings.Settings. All settings (that have been defined in pydantic_settings.Settings) can be overridden with environment variables. A special DatabaseSettings class is used to allow multiple databases to be configured simply with DSNs.
 
-Note: as of django-pydantic-settings 0.4.0, Pydantic 1.8+ is required, which means Python 3.6.1+ is also required. If you need to use Python 3.6, you'll need to stick with django-pydantic-settings <0.4.0.
+As of django-pydantic-settings 0.6.0, Django 4.0 is now supported, but, as a result, support for Python 3.6 and 3.7 has been dropped. Python <3.8 can still be used with versions 0.5.0 and lower, and Django 3.2.x and lower; Python 3.6.0 requires django-pydantic-settings <0.4.0. Currently, django-pydantic-settings is tested on Python 3.8, 3.9, and 3.10, and Django 2.2, 3.0, 3.1, 3.2, and 4.0.
 
 ## Installation & Setup
 
@@ -88,9 +88,8 @@ class DatabaseSettings(BaseSettings):
 ```
 
 ```python
-❯ DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo poetry run python settings_test/manage.py shell
-Python 3.9.1 (default, Jan 12 2021, 16:45:25) 
-[GCC 8.3.0] on linux
+❯ DJANGO_SETTINGS_MODULE=settings_test.database_settings.TestSettings DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo poetry run python manage.py shell
+Python 3.10.2 (main, Feb  2 2022, 06:19:27) [Clang 13.0.0 (clang-1300.0.29.3)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 (InteractiveConsole)
 >>> from rich import print
@@ -104,11 +103,20 @@ Type "help", "copyright", "credits" or "license" for more information.
         'HOST': '/cloudsql/project:region:instance',
         'PORT': '',
         'CONN_MAX_AGE': 0,
-        'ENGINE': 'django.db.backends.postgresql_psycopg2'
+        'ENGINE': 'django.db.backends.postgresql'
     },
-    'secondary': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
+    'DEFAULT': {
+        'NAME': 'database',
+        'USER': 'username',
+        'PASSWORD': 'password',
+        'HOST': '/cloudsql/project:region:instance',
+        'PORT': '',
+        'CONN_MAX_AGE': 0,
+        'ENGINE': 'django.db.backends.postgresql'
+    },
+    'SECONDARY': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
 }
->>> 
+>>>
 ```
 
 ## Sentry configuration

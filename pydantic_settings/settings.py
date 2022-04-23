@@ -64,26 +64,26 @@ class DatabaseSettings(BaseSettings):
             return {}
 
         engines = {
-            'postgres': 'django.db.backends.postgresql',
-            'postgis': 'django.contrib.gis.db.backends.postgis',
-            'mssql': 'sql_server.pyodbc',
-            'mysql': 'django.db.backends.mysql',
-            'mysqlgis': 'django.contrib.gis.db.backends.mysql',
-            'sqlite': 'django.db.backends.sqlite3',
-            'spatialite': 'django.contrib.gis.db.backends.spatialite',
-            'oracle': 'django.db.backends.oracle',
-            'oraclegis': 'django.contrib.gis.db.backends.oracle',
-            'redshift': 'django_redshift_backend',
+            "postgres": "django.db.backends.postgresql",
+            "postgis": "django.contrib.gis.db.backends.postgis",
+            "mssql": "sql_server.pyodbc",
+            "mysql": "django.db.backends.mysql",
+            "mysqlgis": "django.contrib.gis.db.backends.mysql",
+            "sqlite": "django.db.backends.sqlite3",
+            "spatialite": "django.contrib.gis.db.backends.spatialite",
+            "oracle": "django.db.backends.oracle",
+            "oraclegis": "django.contrib.gis.db.backends.oracle",
+            "redshift": "django_redshift_backend",
         }
 
         return {
-            'NAME': v.path.lstrip('/') if v.path else '',
-            'USER': v.user or '',
-            'PASSWORD': v.password or '',
-            'HOST': urllib.parse.unquote(v.host) if v.host else '',
-            'PORT': v.port or '',
-            'CONN_MAX_AGE': 0,
-            'ENGINE': engines[v.scheme],
+            "NAME": v.path.lstrip("/") if v.path else "",
+            "USER": v.user or "",
+            "PASSWORD": v.password or "",
+            "HOST": urllib.parse.unquote(v.host) if v.host else "",
+            "PORT": v.port or "",
+            "CONN_MAX_AGE": 0,
+            "ENGINE": engines[v.scheme],
         }
 
 
@@ -234,7 +234,9 @@ class PydanticSettings(BaseSettings):
     SESSION_COOKIE_HTTPONLY: Optional[bool] = global_settings.SESSION_COOKIE_HTTPONLY
     SESSION_COOKIE_SAMESITE: Optional[
         Literal["Lax", "Strict", "None"]
-    ] = _get_default_setting("SESSION_COOKIE_SAMESITE")  # type: ignore
+    ] = _get_default_setting(
+        "SESSION_COOKIE_SAMESITE"
+    )  # type: ignore
     SESSION_SAVE_EVERY_REQUEST: Optional[
         bool
     ] = global_settings.SESSION_SAVE_EVERY_REQUEST
@@ -256,9 +258,9 @@ class PydanticSettings(BaseSettings):
     ] = global_settings.AUTHENTICATION_BACKENDS
     LOGIN_URL: Optional[str] = global_settings.LOGIN_URL
     LOGIN_REDIRECT_URL: Optional[str] = global_settings.LOGIN_REDIRECT_URL
-    PASSWORD_RESET_TIMEOUT_DAYS: Optional[
-        int
-    ] = global_settings.PASSWORD_RESET_TIMEOUT_DAYS
+    PASSWORD_RESET_TIMEOUT_DAYS: Optional[int] = _get_default_setting(
+        "PASSWORD_RESET_TIMEOUT_DAYS"
+    )
     PASSWORD_RESET_TIMEOUT: Optional[int] = _get_default_setting(
         "PASSWORD_RESET_TIMEOUT"
     )
@@ -276,7 +278,9 @@ class PydanticSettings(BaseSettings):
     CSRF_COOKIE_HTTPONLY: Optional[bool] = global_settings.CSRF_COOKIE_HTTPONLY
     CSRF_COOKIE_SAMESITE: Optional[
         Literal["Lax", "Strict", "None"]
-    ] = _get_default_setting("CSRF_COOKIE_SAMESITE")  # type: ignore
+    ] = _get_default_setting(
+        "CSRF_COOKIE_SAMESITE"
+    )  # type: ignore
     CSRF_HEADER_NAME: Optional[str] = global_settings.CSRF_HEADER_NAME
     CSRF_TRUSTED_ORIGINS: Optional[List[str]] = global_settings.CSRF_TRUSTED_ORIGINS
     CSRF_USE_SESSIONS: Optional[bool] = global_settings.CSRF_USE_SESSIONS
@@ -299,9 +303,9 @@ class PydanticSettings(BaseSettings):
     STATICFILES_FINDERS: Optional[List[str]] = global_settings.STATICFILES_FINDERS
     MIGRATION_MODULES: Optional[Dict[str, str]] = global_settings.MIGRATION_MODULES
     SILENCED_SYSTEM_CHECKS: Optional[List[str]] = global_settings.SILENCED_SYSTEM_CHECKS
-    SECURE_BROWSER_XSS_FILTER: Optional[
-        bool
-    ] = global_settings.SECURE_BROWSER_XSS_FILTER
+    SECURE_BROWSER_XSS_FILTER: Optional[bool] = _get_default_setting(
+        "SECURE_BROWSER_XSS_FILTER"
+    )
     SECURE_CONTENT_TYPE_NOSNIFF: Optional[
         bool
     ] = global_settings.SECURE_CONTENT_TYPE_NOSNIFF
