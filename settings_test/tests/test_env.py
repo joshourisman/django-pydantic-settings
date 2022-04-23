@@ -39,6 +39,16 @@ def test_database_port(monkeypatch):
     assert settings.DATABASES["default"]["PORT"] == "6543"
 
 
+def test_multiple_databases(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgres://foo:bar@foo.com:6543/database")
+    monkeypatch.setenv("SECONDARY_DATABASE_URL", "sqlite:///secondary.db")
+    settings._wrapped = empty
+    SetUp().configure()
+
+    assert "default" in settings.DATABASES
+    assert "secondary" in settings.DATABASES
+
+
 def test_allowed_hosts(monkeypatch):
     monkeypatch.setenv(
         "DJANGO_ALLOWED_HOSTS", '["*", "127.0.0.1", ".localhost", "[::1]"]'
