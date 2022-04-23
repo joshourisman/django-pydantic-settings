@@ -88,9 +88,8 @@ class DatabaseSettings(BaseSettings):
 ```
 
 ```python
-❯ DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo poetry run python settings_test/manage.py shell
-Python 3.9.1 (default, Jan 12 2021, 16:45:25)
-[GCC 8.3.0] on linux
+❯ DJANGO_SETTINGS_MODULE=settings_test.database_settings.TestSettings DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo poetry run python manage.py shell
+Python 3.10.2 (main, Feb  2 2022, 06:19:27) [Clang 13.0.0 (clang-1300.0.29.3)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 (InteractiveConsole)
 >>> from rich import print
@@ -104,9 +103,18 @@ Type "help", "copyright", "credits" or "license" for more information.
         'HOST': '/cloudsql/project:region:instance',
         'PORT': '',
         'CONN_MAX_AGE': 0,
-        'ENGINE': 'django.db.backends.postgresql_psycopg2'
+        'ENGINE': 'django.db.backends.postgresql'
     },
-    'secondary': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
+    'DEFAULT': {
+        'NAME': 'database',
+        'USER': 'username',
+        'PASSWORD': 'password',
+        'HOST': '/cloudsql/project:region:instance',
+        'PORT': '',
+        'CONN_MAX_AGE': 0,
+        'ENGINE': 'django.db.backends.postgresql'
+    },
+    'SECONDARY': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
 }
 >>>
 ```
