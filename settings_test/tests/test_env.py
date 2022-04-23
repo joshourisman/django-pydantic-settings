@@ -40,6 +40,9 @@ def test_database_port(monkeypatch):
 
 
 def test_multiple_databases(monkeypatch):
+    monkeypatch.setenv(
+        "DJANGO_SETTINGS_MODULE", "settings_test.database_settings.TestSettings"
+    )
     monkeypatch.setenv("DATABASE_URL", "postgres://foo:bar@foo.com:6543/database")
     monkeypatch.setenv("SECONDARY_DATABASE_URL", "sqlite:///secondary.db")
     settings._wrapped = empty
