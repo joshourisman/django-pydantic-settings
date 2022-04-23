@@ -258,9 +258,9 @@ class PydanticSettings(BaseSettings):
     ] = global_settings.AUTHENTICATION_BACKENDS
     LOGIN_URL: Optional[str] = global_settings.LOGIN_URL
     LOGIN_REDIRECT_URL: Optional[str] = global_settings.LOGIN_REDIRECT_URL
-    PASSWORD_RESET_TIMEOUT_DAYS: Optional[
-        int
-    ] = global_settings.PASSWORD_RESET_TIMEOUT_DAYS
+    PASSWORD_RESET_TIMEOUT_DAYS: Optional[int] = _get_default_setting(
+        "PASSWORD_RESET_TIMEOUT_DAYS"
+    )
     PASSWORD_RESET_TIMEOUT: Optional[int] = _get_default_setting(
         "PASSWORD_RESET_TIMEOUT"
     )
@@ -303,9 +303,9 @@ class PydanticSettings(BaseSettings):
     STATICFILES_FINDERS: Optional[List[str]] = global_settings.STATICFILES_FINDERS
     MIGRATION_MODULES: Optional[Dict[str, str]] = global_settings.MIGRATION_MODULES
     SILENCED_SYSTEM_CHECKS: Optional[List[str]] = global_settings.SILENCED_SYSTEM_CHECKS
-    SECURE_BROWSER_XSS_FILTER: Optional[
-        bool
-    ] = global_settings.SECURE_BROWSER_XSS_FILTER
+    SECURE_BROWSER_XSS_FILTER: Optional[bool] = _get_default_setting(
+        "SECURE_BROWSER_XSS_FILTER"
+    )
     SECURE_CONTENT_TYPE_NOSNIFF: Optional[
         bool
     ] = global_settings.SECURE_CONTENT_TYPE_NOSNIFF
