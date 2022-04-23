@@ -64,26 +64,26 @@ class DatabaseSettings(BaseSettings):
             return {}
 
         engines = {
-            'postgres': 'django.db.backends.postgresql',
-            'postgis': 'django.contrib.gis.db.backends.postgis',
-            'mssql': 'sql_server.pyodbc',
-            'mysql': 'django.db.backends.mysql',
-            'mysqlgis': 'django.contrib.gis.db.backends.mysql',
-            'sqlite': 'django.db.backends.sqlite3',
-            'spatialite': 'django.contrib.gis.db.backends.spatialite',
-            'oracle': 'django.db.backends.oracle',
-            'oraclegis': 'django.contrib.gis.db.backends.oracle',
-            'redshift': 'django_redshift_backend',
+            "postgres": "django.db.backends.postgresql",
+            "postgis": "django.contrib.gis.db.backends.postgis",
+            "mssql": "sql_server.pyodbc",
+            "mysql": "django.db.backends.mysql",
+            "mysqlgis": "django.contrib.gis.db.backends.mysql",
+            "sqlite": "django.db.backends.sqlite3",
+            "spatialite": "django.contrib.gis.db.backends.spatialite",
+            "oracle": "django.db.backends.oracle",
+            "oraclegis": "django.contrib.gis.db.backends.oracle",
+            "redshift": "django_redshift_backend",
         }
 
         return {
-            'NAME': v.path.lstrip('/') if v.path else '',
-            'USER': v.user or '',
-            'PASSWORD': v.password or '',
-            'HOST': urllib.parse.unquote(v.host) if v.host else '',
-            'PORT': v.port or '',
-            'CONN_MAX_AGE': 0,
-            'ENGINE': engines[v.scheme],
+            "NAME": v.path.lstrip("/") if v.path else "",
+            "USER": v.user or "",
+            "PASSWORD": v.password or "",
+            "HOST": urllib.parse.unquote(v.host) if v.host else "",
+            "PORT": v.port or "",
+            "CONN_MAX_AGE": 0,
+            "ENGINE": engines[v.scheme],
         }
 
 
@@ -234,7 +234,9 @@ class PydanticSettings(BaseSettings):
     SESSION_COOKIE_HTTPONLY: Optional[bool] = global_settings.SESSION_COOKIE_HTTPONLY
     SESSION_COOKIE_SAMESITE: Optional[
         Literal["Lax", "Strict", "None"]
-    ] = _get_default_setting("SESSION_COOKIE_SAMESITE")  # type: ignore
+    ] = _get_default_setting(
+        "SESSION_COOKIE_SAMESITE"
+    )  # type: ignore
     SESSION_SAVE_EVERY_REQUEST: Optional[
         bool
     ] = global_settings.SESSION_SAVE_EVERY_REQUEST
@@ -276,7 +278,9 @@ class PydanticSettings(BaseSettings):
     CSRF_COOKIE_HTTPONLY: Optional[bool] = global_settings.CSRF_COOKIE_HTTPONLY
     CSRF_COOKIE_SAMESITE: Optional[
         Literal["Lax", "Strict", "None"]
-    ] = _get_default_setting("CSRF_COOKIE_SAMESITE")  # type: ignore
+    ] = _get_default_setting(
+        "CSRF_COOKIE_SAMESITE"
+    )  # type: ignore
     CSRF_HEADER_NAME: Optional[str] = global_settings.CSRF_HEADER_NAME
     CSRF_TRUSTED_ORIGINS: Optional[List[str]] = global_settings.CSRF_TRUSTED_ORIGINS
     CSRF_USE_SESSIONS: Optional[bool] = global_settings.CSRF_USE_SESSIONS
