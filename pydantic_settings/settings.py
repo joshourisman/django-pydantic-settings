@@ -77,7 +77,7 @@ class DatabaseSettings(BaseSettings):
         }
 
         return {
-            "NAME": v.path.lstrip("/") if v.path else "",
+            "NAME": v.path[1:] if v.path.startswith("/") else v.path or "",
             "USER": v.user or "",
             "PASSWORD": v.password or "",
             "HOST": urllib.parse.unquote(v.host) if v.host else "",
