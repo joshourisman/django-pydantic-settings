@@ -31,6 +31,18 @@ def test_env_loaded2(monkeypatch):
     assert settings.DATABASES["default"]["NAME"] == "bar"
 
 
+def test_sqlite_path(monkeypatch):
+    """
+    Make sure we aren't improperly stripping the leading slash from the path for SQLite databases with an
+    absolute path
+    """
+    monkeypatch.setenv("DATABASE_URL", "sqlite:////db/test.db")
+    settings._wrapped = empty
+    SetUp().configure()
+
+    assert settings.DATABASES["default"]["NAME"] == "/db/test.db"
+
+
 def test_database_port(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "postgres://foo:bar@foo.com:6543/database")
     settings._wrapped = empty
