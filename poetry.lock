@@ -318,7 +318,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "tox"
-version = "3.25.0"
+version = "3.25.1"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "dev"
 optional = false
@@ -391,7 +391,7 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b5bf715fbe37b7831316b0082ce866f1534e582c7c745098357c07dd7ad44ec3"
+content-hash = "af668665f17ca619702f656a952f8b3f5f4fbddfc6abf9e98e0ab302db6efd83"
 
 [metadata.files]
 asgiref = [
@@ -550,8 +550,8 @@ tomli = [
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
 tox = [
-    {file = "tox-3.25.0-py2.py3-none-any.whl", hash = "sha256:0805727eb4d6b049de304977dfc9ce315a1938e6619c3ab9f38682bb04662a5a"},
-    {file = "tox-3.25.0.tar.gz", hash = "sha256:37888f3092aa4e9f835fc8cc6dadbaaa0782651c41ef359e3a5743fcb0308160"},
+    {file = "tox-3.25.1-py2.py3-none-any.whl", hash = "sha256:c38e15f4733683a9cc0129fba078633e07eb0961f550a010ada879e95fb32632"},
+    {file = "tox-3.25.1.tar.gz", hash = "sha256:c138327815f53bc6da4fe56baec5f25f00622ae69ef3fe4e1e385720e22486f9"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.2.0-py3-none-any.whl", hash = "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708"},
