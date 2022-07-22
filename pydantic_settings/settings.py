@@ -10,21 +10,12 @@ except ImportError:
 
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
-from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
+from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator, root_validator
 from pydantic.main import BaseModel
 from pydantic.networks import EmailStr, IPvAnyAddress
 from pydantic.types import FilePath
 
 from .database import DatabaseDsn
-
-
-def _base_module(obj: Any, append: str = "") -> Optional[str]:
-    module = inspect.getmodule(obj)
-    if module:
-        base_module = module.__name__.split(".", 2)[0]
-        if append:
-            base_module = f"{base_module}.{append}"
-        return base_module
 
 
 class SetUp(BaseSettings):
@@ -336,22 +327,31 @@ class PydanticSettings(BaseSettings):
 
         return {key: value for key, value in v.dict().items() if value != {}}
 
-    @validator("BASE_DIR", pre=True, always=True)
-    def default_base_dir(cls, v):
-        if v:
-            return v
+    @root_validator
+    def get_dynamic_defaults(cls, values):
+        """
+        Get dynamic defaults for BASE_DIR, ROOT_URLCONF, and WSGI_APPLICATION.
+        """
         module = inspect.getmodule(cls)
-        if module:
-            # Set the default path to be the directory containing the base module.
-            path = Path(inspect.getfile(module)).resolve()
+        if module and module.__name__.startswith("pydantic_settings."):
+            module = None
+
+        base_dir: Path = values["BASE_DIR"]
+
+        if not base_dir and module:
+            path = Path(inspect.getfile(module)).resolve().parent
             for part in module.__name__.split("."):
                 path = path.parent
-            return path
+            values["BASE_DIR"] = path
 
-    @validator("WSGI_APPLICATION", always=True)
-    def default_wsgi_application(cls, v):
-        return v or _base_module(cls, "wsgi.application")
-
-    @validator("ROOT_URLCONF", always=True)
-    def default_root_urlconf(cls, v):
-        return v or _base_module(cls, "urls")
+        base_module = None
+        if module:
+            base_module = module.__name__.split(".", 1)[0]
+        elif base_dir:
+            base_module = base_dir.name
+        if base_module:
+            if not values["WSGI_APPLICATION"]:
+                values["WSGI_APPLICATION"] = f"{base_module}.wsgi.application"
+            if not values["ROOT_URLCONF"]:
+                values["ROOT_URLCONF"] = f"{base_module}.urls"
+        return values
