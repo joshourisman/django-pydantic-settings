@@ -342,7 +342,11 @@ class PydanticSettings(BaseSettings):
             return v
         module = inspect.getmodule(cls)
         if module:
-            return Path(inspect.getfile(module)).resolve().parent
+            # Set the default path to be the directory containing the base module.
+            path = Path(inspect.getfile(module)).resolve()
+            for part in module.__name__.split("."):
+                path = path.parent
+            return path
 
     @validator("WSGI_APPLICATION", always=True)
     def default_wsgi_application(cls, v):
