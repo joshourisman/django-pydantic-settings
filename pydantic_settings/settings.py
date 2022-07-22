@@ -339,7 +339,9 @@ class PydanticSettings(BaseSettings):
         base_dir: Path = values["BASE_DIR"]
 
         if not base_dir and module:
-            path = Path(inspect.getfile(module)).resolve().parent
+            path = Path(inspect.getfile(module)).resolve()
+            if path.stem == "__init__":
+                path = path.parent
             for part in module.__name__.split("."):
                 path = path.parent
             values["BASE_DIR"] = path
