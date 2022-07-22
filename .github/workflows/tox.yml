@@ -1,6 +1,6 @@
 name: Tox
 
-on: [push]
+on: [push, workflow_call, workflow_dispatch, pull_request]
 
 jobs:
   build:
