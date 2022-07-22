@@ -21,7 +21,7 @@ from .database import DatabaseDsn
 def _base_module(obj: Any, append: str = "") -> Optional[str]:
     module = inspect.getmodule(obj)
     if module:
-        base_module = module.__name__.split(".")[0]
+        base_module = module.__name__.split(".", 2)[0]
         if append:
             base_module = f"{base_module}.{append}"
         return base_module
