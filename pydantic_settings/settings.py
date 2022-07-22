@@ -1,5 +1,5 @@
 import urllib.parse
-from inspect import getsourcefile
+import inspect
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Pattern, Sequence, Tuple, Union
 
@@ -17,41 +17,31 @@ from pydantic.types import FilePath
 
 from .database import DatabaseDsn
 
-DEFAULT_SETTINGS_MODULE_FIELD = Field(
-    "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
-)
+
+def _base_module(obj: Any, append: str = "") -> Optional[str]:
+    module = inspect.getmodule(obj)
+    if module:
+        base_module = module.__name__.split(".")[0]
+        if append:
+            base_module = f"{base_module}.{append}"
+        return base_module
 
 
 class SetUp(BaseSettings):
-    settings_module: PyObject = DEFAULT_SETTINGS_MODULE_FIELD
-    settings_module_string: str = DEFAULT_SETTINGS_MODULE_FIELD
+    DJANGO_SETTINGS_MODULE: PyObject = "pydantic_settings.settings.PydanticSettings"
 
     def configure(self):
         if not settings.configured:
+            settings_obj = self.DJANGO_SETTINGS_MODULE
+            if inspect.isclass(settings_obj):
+                settings_obj = settings_obj()
+
             settings_dict = {
                 key: value
-                for key, value in self.settings_module().dict().items()
+                for key, value in settings_obj.dict().items()
                 if hasattr(global_settings, key) is False
                 or value != getattr(global_settings, key)
             }
-
-            if settings_dict["BASE_DIR"] is None:
-                base_dir = Path(
-                    getsourcefile(SetUp().settings_module)
-                    or "pydantic_settings.settings.PydanticSettings"
-                ).parent.parent.parent
-                settings_dict["BASE_DIR"] = base_dir
-                base_module = self.settings_module_string.rsplit(".", 2)[0]
-            else:
-                base_module = f'{settings_dict["BASE_DIR"]}'
-
-            if settings_dict["ROOT_URLCONF"] is None:
-                settings_dict["ROOT_URLCONF"] = ".".join([base_module, "urls"])
-            if settings_dict.get("WSGI_APPLICATION") is None:
-                settings_dict["WSGI_APPLICATION"] = ".".join(
-                    [base_module, "wsgi", "application"]
-                )
-
             settings.configure(**settings_dict)
 
 
@@ -104,7 +94,7 @@ def _get_default_setting(setting: str) -> Any:
 
 
 class PydanticSettings(BaseSettings):
-    BASE_DIR: Optional[DirectoryPath]
+    BASE_DIR: Optional[DirectoryPath] = None
 
     DEBUG: Optional[bool] = global_settings.DEBUG
     DEBUG_PROPAGATE_EXCEPTIONS: Optional[
@@ -217,7 +207,7 @@ class PydanticSettings(BaseSettings):
     X_FRAME_OPTIONS: Optional[str] = global_settings.X_FRAME_OPTIONS
     USE_X_FORWARDED_HOST: Optional[bool] = global_settings.USE_X_FORWARDED_HOST
     USE_X_FORWARDED_PORT: Optional[bool] = global_settings.USE_X_FORWARDED_PORT
-    WSGI_APPLICATION: Optional[str]
+    WSGI_APPLICATION: Optional[str] = None
     SECURE_PROXY_SSL_HEADER: Optional[
         Tuple[str, str]
     ] = global_settings.SECURE_PROXY_SSL_HEADER
@@ -330,7 +320,7 @@ class PydanticSettings(BaseSettings):
     SECURE_SSL_HOST: Optional[str] = global_settings.SECURE_SSL_HOST
     SECURE_SSL_REDIRECT: Optional[bool] = global_settings.SECURE_SSL_REDIRECT
 
-    ROOT_URLCONF: Optional[str]
+    ROOT_URLCONF: Optional[str] = None
     STATIC_URL: Optional[str] = global_settings.STATIC_URL
     USE_I18N: Optional[bool] = global_settings.USE_I18N
     USE_L10N: Optional[bool] = global_settings.USE_L10N
@@ -345,3 +335,19 @@ class PydanticSettings(BaseSettings):
             return {}
 
         return {key: value for key, value in v.dict().items() if value != {}}
+
+    @validator("BASE_DIR", pre=True, always=True)
+    def default_base_dir(cls, v):
+        if v:
+            return v
+        module = inspect.getmodule(cls)
+        if module:
+            return Path(inspect.getfile(module)).resolve().parent
+
+    @validator("WSGI_APPLICATION", always=True)
+    def default_wsgi_application(cls, v):
+        return v or _base_module(cls, "wsgi.application")
+
+    @validator("ROOT_URLCONF", always=True)
+    def default_root_urlconf(cls, v):
+        return v or _base_module(cls, "urls")
