@@ -1,8 +1,9 @@
 import re
+import urllib.parse
 from typing import Dict, Optional, Pattern, Tuple, cast
 from urllib.parse import quote_plus
 
-from pydantic import AnyUrl
+from pydantic import AnyUrl, BaseSettings, Field, validator
 from pydantic.validators import constr_length_validator, str_validator
 
 _cloud_sql_regex_cache = None
@@ -101,3 +102,35 @@ class DatabaseDsn(AnyUrl):
             return host, None, "socket", False
 
         return super().validate_host(parts)
+
+
+class DatabaseSettings(BaseSettings):
+    default: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
+
+    @validator("*")
+    def format_database_settings(cls, v):
+        if v is None:
+            return {}
+
+        engines = {
+            "postgres": "django.db.backends.postgresql",
+            "postgis": "django.contrib.gis.db.backends.postgis",
+            "mssql": "sql_server.pyodbc",
+            "mysql": "django.db.backends.mysql",
+            "mysqlgis": "django.contrib.gis.db.backends.mysql",
+            "sqlite": "django.db.backends.sqlite3",
+            "spatialite": "django.contrib.gis.db.backends.spatialite",
+            "oracle": "django.db.backends.oracle",
+            "oraclegis": "django.contrib.gis.db.backends.oracle",
+            "redshift": "django_redshift_backend",
+        }
+
+        return {
+            "NAME": v.path[1:] if v.path.startswith("/") else v.path or "",
+            "USER": v.user or "",
+            "PASSWORD": v.password or "",
+            "HOST": urllib.parse.unquote(v.host) if v.host else "",
+            "PORT": v.port or "",
+            "CONN_MAX_AGE": 0,
+            "ENGINE": engines[v.scheme],
+        }
