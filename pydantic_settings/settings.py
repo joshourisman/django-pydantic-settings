@@ -104,7 +104,7 @@ def _get_default_setting(setting: str) -> Any:
 
 
 class PydanticSettings(BaseSettings):
-    BASE_DIR: Optional[DirectoryPath]
+    BASE_DIR: Optional[DirectoryPath] = None
 
     DEBUG: Optional[bool] = global_settings.DEBUG
     DEBUG_PROPAGATE_EXCEPTIONS: Optional[
@@ -229,7 +229,7 @@ class PydanticSettings(BaseSettings):
     X_FRAME_OPTIONS: Optional[str] = global_settings.X_FRAME_OPTIONS
     USE_X_FORWARDED_HOST: Optional[bool] = global_settings.USE_X_FORWARDED_HOST
     USE_X_FORWARDED_PORT: Optional[bool] = global_settings.USE_X_FORWARDED_PORT
-    WSGI_APPLICATION: Optional[str]
+    WSGI_APPLICATION: Optional[str] = None
     SECURE_PROXY_SSL_HEADER: Optional[
         Tuple[str, str]
     ] = global_settings.SECURE_PROXY_SSL_HEADER
@@ -350,7 +350,7 @@ class PydanticSettings(BaseSettings):
     SECURE_SSL_HOST: Optional[str] = global_settings.SECURE_SSL_HOST
     SECURE_SSL_REDIRECT: Optional[bool] = global_settings.SECURE_SSL_REDIRECT
 
-    ROOT_URLCONF: Optional[str]
+    ROOT_URLCONF: Optional[str] = None
     STATIC_URL: Optional[str] = global_settings.STATIC_URL
     USE_I18N: Optional[bool] = global_settings.USE_I18N
     USE_L10N: Optional[bool] = global_settings.USE_L10N
