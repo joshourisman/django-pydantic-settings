@@ -2,19 +2,20 @@ from inspect import getsourcefile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Pattern, Sequence, Tuple, Union
 
+from django.conf import global_settings, settings
+from django.core.management.utils import get_random_secret_key
+from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
+from pydantic.networks import EmailStr, IPvAnyAddress
+from pydantic.types import FilePath
+
+from pydantic_settings.database import DatabaseSettings
+from pydantic_settings.models import CacheBackendModel, TemplateBackendModel
+
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
 
-from django.conf import global_settings, settings
-from django.core.management.utils import get_random_secret_key
-from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
-from pydantic.main import BaseModel
-from pydantic.networks import EmailStr, IPvAnyAddress
-from pydantic.types import FilePath
-
-from pydantic_settings.database import DatabaseSettings
 
 DEFAULT_SETTINGS_MODULE_FIELD = Field(
     "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
@@ -52,18 +53,6 @@ class SetUp(BaseSettings):
                 )
 
             settings.configure(**settings_dict)
-
-
-class TemplateBackendModel(BaseModel):
-    BACKEND: str
-    NAME: Optional[str]
-    DIRS: Optional[List[DirectoryPath]]
-    APP_DIRS: Optional[bool]
-    OPTIONS: Optional[dict]
-
-
-class CacheBackendModel(BaseModel):
-    default: Dict[Literal["BACKEND"], str]
 
 
 def _get_default_setting(setting: str) -> Any:
