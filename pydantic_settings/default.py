@@ -1,6 +1,12 @@
-from pydantic_settings.database import DatabaseSettings
+from pydantic import Field
+
+from pydantic_settings.database import DatabaseDsn, DatabaseSettings
 from pydantic_settings.models import TemplateBackendModel
 from pydantic_settings.settings import PydanticSettings
+
+
+class DefaultDatabaseSettings(DatabaseSettings):
+    default: DatabaseDsn = Field(env="DATABASE_URL", default="sqlite:///db.sqlite3")
 
 
 class DjangoDefaultProjectSettings(PydanticSettings):
@@ -9,9 +15,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     generates for new projects.
     """
 
-    DATABASES: DatabaseSettings = DatabaseSettings.parse_obj(
-        {"default": "sqlite:///db.sqlite3"}
-    )
+    DATABASES: DefaultDatabaseSettings = DefaultDatabaseSettings()
 
     TEMPLATES: list[TemplateBackendModel] = [
         TemplateBackendModel.parse_obj(data)
