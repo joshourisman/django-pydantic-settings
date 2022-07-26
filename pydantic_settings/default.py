@@ -51,7 +51,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
 
-    AUTH_PASSWORD_VALIDATORS = [
+    AUTH_PASSWORD_VALIDATORS: list[dict] = [
         {
             "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
         },
