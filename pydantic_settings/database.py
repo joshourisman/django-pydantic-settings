@@ -9,6 +9,21 @@ from pydantic.validators import constr_length_validator, str_validator
 _cloud_sql_regex_cache = None
 
 
+DB_ENGINES = {
+    "postgres": "django.db.backends.postgresql",
+    "postgresql": "django.db.backends.postgresql",
+    "postgis": "django.contrib.gis.db.backends.postgis",
+    "mssql": "sql_server.pyodbc",
+    "mysql": "django.db.backends.mysql",
+    "mysqlgis": "django.contrib.gis.db.backends.mysql",
+    "sqlite": "django.db.backends.sqlite3",
+    "spatialite": "django.contrib.gis.db.backends.spatialite",
+    "oracle": "django.db.backends.oracle",
+    "oraclegis": "django.contrib.gis.db.backends.oracle",
+    "redshift": "django_redshift_backend",
+}
+
+
 def cloud_sql_regex() -> Pattern[str]:
     global _cloud_sql_regex_cache
     if _cloud_sql_regex_cache is None:
@@ -49,19 +64,7 @@ class DatabaseDsn(AnyUrl):
         self.query = query
         self.fragment = fragment
 
-    allowed_schemes = {
-        "postgres",
-        "postgresql",
-        "postgis",
-        "mssql",
-        "mysql",
-        "mysqlgis",
-        "sqlite",
-        "spatialite",
-        "oracle",
-        "oraclegis",
-        "redshift",
-    }
+    allowed_schemes = set(DB_ENGINES)
 
     @classmethod
     def validate(cls, value, field, config):
@@ -109,22 +112,6 @@ class DatabaseSettings(BaseSettings):
 
     @validator("*")
     def format_database_settings(cls, v):
-        if v is None:
-            return {}
-
-        engines = {
-            "postgres": "django.db.backends.postgresql",
-            "postgis": "django.contrib.gis.db.backends.postgis",
-            "mssql": "sql_server.pyodbc",
-            "mysql": "django.db.backends.mysql",
-            "mysqlgis": "django.contrib.gis.db.backends.mysql",
-            "sqlite": "django.db.backends.sqlite3",
-            "spatialite": "django.contrib.gis.db.backends.spatialite",
-            "oracle": "django.db.backends.oracle",
-            "oraclegis": "django.contrib.gis.db.backends.oracle",
-            "redshift": "django_redshift_backend",
-        }
-
         return {
             "NAME": v.path[1:] if v.path.startswith("/") else v.path or "",
             "USER": v.user or "",
@@ -132,5 +119,5 @@ class DatabaseSettings(BaseSettings):
             "HOST": urllib.parse.unquote(v.host) if v.host else "",
             "PORT": v.port or "",
             "CONN_MAX_AGE": 0,
-            "ENGINE": engines[v.scheme],
+            "ENGINE": DB_ENGINES[v.scheme],
         }
