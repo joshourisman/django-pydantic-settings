@@ -4,12 +4,17 @@ from pydantic import Field
 
 from pydantic_settings import PydanticSettings
 from pydantic_settings.database import DatabaseDsn
+from pydantic_settings.default import DjangoDefaultProjectSettings
 
 
 class TestSettings(PydanticSettings):
     secondary_database_dsn: Optional[DatabaseDsn] = Field(
         env="SECONDARY_DATABASE_URL", configure_database="secondary"
     )
+
+
+class TestDefaultSettings(DjangoDefaultProjectSettings):
+    ROOT_URLCONF = "tests.settings_test.urls"
 
 
 if __name__ == "__main__":

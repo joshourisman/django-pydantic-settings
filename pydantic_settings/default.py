@@ -1,6 +1,9 @@
-from pydantic_settings.database import DatabaseSettings
-from pydantic_settings.models import TemplateBackendModel
-from pydantic_settings.settings import PydanticSettings
+from typing import Dict
+
+from pydantic import root_validator
+
+from pydantic_settings.models import DatabaseModel, TemplateBackendModel
+from pydantic_settings.settings import DatabaseModel, PydanticSettings
 
 
 class DjangoDefaultProjectSettings(PydanticSettings):
@@ -9,9 +12,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     generates for new projects.
     """
 
-    DATABASES: DatabaseSettings = DatabaseSettings.parse_obj(
-        {"default": "sqlite:///db.sqlite3"}
-    )
+    DATABASES: Dict[str, DatabaseModel] = {"default": "sqlite:///db.sqlite3"}  # type: ignore
 
     TEMPLATES: list[TemplateBackendModel] = [
         TemplateBackendModel.parse_obj(data)
@@ -72,3 +73,12 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     STATIC_URL: str = "static/"
 
     DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
+
+    @root_validator(allow_reuse=True)
+    def default_database(cls, values):
+        base_dir = values.get("BASE_DIR")
+        if base_dir:
+            values["DATABASES"]["default"] = DatabaseModel(
+                ENGINE="django.db.backends.sqlite3", NAME=str(base_dir / "db.sqlite3")
+            )
+        return values
