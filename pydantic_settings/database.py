@@ -3,8 +3,10 @@ import urllib.parse
 from typing import Dict, Optional, Pattern, Tuple, cast
 from urllib.parse import quote_plus
 
-from pydantic import AnyUrl, BaseSettings, Field, validator
+from pydantic import AnyUrl
 from pydantic.validators import constr_length_validator, str_validator
+
+from pydantic_settings.models import DatabaseModel
 
 _cloud_sql_regex_cache = None
 
@@ -37,33 +39,6 @@ def cloud_sql_regex() -> Pattern[str]:
 
 
 class DatabaseDsn(AnyUrl):
-    def __init__(
-        self,
-        url: str,
-        *,
-        scheme: str,
-        user: Optional[str] = None,
-        password: Optional[str] = None,
-        host: Optional[str] = None,
-        tld: Optional[str] = None,
-        host_type: str = "domain",
-        port: Optional[str] = None,
-        path: str = None,
-        query: Optional[str] = None,
-        fragment: Optional[str] = None,
-    ) -> None:
-        str.__init__(url)
-        self.scheme = scheme
-        self.user = user
-        self.password = password
-        self.host = host
-        self.tld = tld
-        self.host_type = host_type
-        self.port = port
-        self.path = path
-        self.query = query
-        self.fragment = fragment
-
     allowed_schemes = set(DB_ENGINES)
 
     @classmethod
@@ -106,18 +81,15 @@ class DatabaseDsn(AnyUrl):
 
         return super().validate_host(parts)
 
-
-class DatabaseSettings(BaseSettings):
-    default: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
-
-    @validator("*")
-    def format_database_settings(cls, v):
-        return {
-            "NAME": v.path[1:] if v.path.startswith("/") else v.path or "",
-            "USER": v.user or "",
-            "PASSWORD": v.password or "",
-            "HOST": urllib.parse.unquote(v.host) if v.host else "",
-            "PORT": v.port or "",
-            "CONN_MAX_AGE": 0,
-            "ENGINE": DB_ENGINES[v.scheme],
-        }
+    def to_settings_model(self) -> DatabaseModel:
+        name = self.path
+        if name and name.startswith("/"):
+            name = name[1:]
+        return DatabaseModel(
+            NAME=name or "",
+            USER=self.user or "",
+            PASSWORD=self.password or "",
+            HOST=urllib.parse.unquote(self.host) if self.host else "",
+            PORT=self.port or "",
+            ENGINE=DB_ENGINES[self.scheme],
+        )

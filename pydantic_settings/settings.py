@@ -4,12 +4,20 @@ from typing import Any, Callable, Dict, List, Optional, Pattern, Sequence, Tuple
 
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
-from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
+from pydantic import (
+    BaseSettings,
+    DirectoryPath,
+    Field,
+    PyObject,
+    parse_obj_as,
+    root_validator,
+    validator,
+)
 from pydantic.networks import EmailStr, IPvAnyAddress
 from pydantic.types import FilePath
 
-from pydantic_settings.database import DatabaseSettings
-from pydantic_settings.models import CacheBackendModel, TemplateBackendModel
+from pydantic_settings.database import DatabaseDsn
+from pydantic_settings.models import CacheModel, DatabaseModel, TemplateBackendModel
 
 try:
     from typing import Literal
@@ -106,7 +114,7 @@ class PydanticSettings(BaseSettings):
         Union[EmailStr, Literal["root@localhost"]]
     ] = global_settings.SERVER_EMAIL  # type: ignore
 
-    DATABASES: Optional[DatabaseSettings] = Field({})
+    DATABASES: Dict[str, DatabaseModel] = global_settings.DATABASES  # type: ignore
     DATABASE_ROUTERS: Optional[
         List[str]
     ] = global_settings.DATABASE_ROUTERS  # type: ignore
@@ -216,7 +224,7 @@ class PydanticSettings(BaseSettings):
         DirectoryPath
     ] = global_settings.SESSION_FILE_PATH  # type: ignore
     SESSION_SERIALIZER: Optional[str] = global_settings.SESSION_SERIALIZER
-    CACHES: Optional[CacheBackendModel] = global_settings.CACHES  # type: ignore
+    CACHES: Dict[str, CacheModel] = global_settings.CACHES  # type: ignore
     CACHE_MIDDLEWARE_KEY_PREFIX: Optional[
         str
     ] = global_settings.CACHE_MIDDLEWARE_KEY_PREFIX
@@ -307,17 +315,37 @@ class PydanticSettings(BaseSettings):
     SECURE_SSL_REDIRECT: Optional[bool] = global_settings.SECURE_SSL_REDIRECT
 
     ROOT_URLCONF: Optional[str] = None
-    STATIC_URL: Optional[str] = global_settings.STATIC_URL
-    USE_I18N: Optional[bool] = global_settings.USE_I18N
-    USE_L10N: Optional[bool] = global_settings.USE_L10N
-    USE_TZ: Optional[bool] = global_settings.USE_TZ
+
+    default_database_dsn: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
 
     class Config:
         env_prefix = "DJANGO_"
 
-    @validator("DATABASES")
-    def remove_empty_database_dicts(cls, v):
-        if v is None:
-            return {}
+    @validator("DATABASES", pre=True)
+    def parse_databases(cls, databases: dict) -> dict:
+        """
+        Parse any databases specified as DSNs into DatabaseModel objects.
+        """
+        parsed_databases = {}
+        for key, value in databases.items():
+            if value and isinstance(value, str) and not isinstance(value, DatabaseDsn):
+                value = parse_obj_as(DatabaseDsn, value)
+            if isinstance(value, DatabaseDsn):
+                value = value.to_settings_model()
+            if value:
+                parsed_databases[key] = value
+        return parsed_databases
 
-        return {key: value for key, value in v.dict().items() if value != {}}
+    @root_validator
+    def set_default_database(cls, values: dict) -> dict:
+        """
+        Set the default database if it is not already set and is provided by
+        default_database_dsn field.
+        """
+        default_database_dsn: Optional[DatabaseDsn] = values["default_database_dsn"]
+        if default_database_dsn:
+            DATABASES = values["DATABASES"]
+            if not DATABASES.get("default"):
+                DATABASES["default"] = default_database_dsn.to_settings_model()
+            del values["default_database_dsn"]
+        return values

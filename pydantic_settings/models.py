@@ -1,12 +1,7 @@
-from typing import Dict, List, Optional
+from typing import List, Optional, TypedDict
 
 from pydantic import DirectoryPath
 from pydantic.main import BaseModel
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 
 class TemplateBackendModel(BaseModel):
@@ -17,5 +12,54 @@ class TemplateBackendModel(BaseModel):
     OPTIONS: Optional[dict]
 
 
-class CacheBackendModel(BaseModel):
-    default: Dict[Literal["BACKEND"], str]
+class CacheModel(BaseModel):
+    BACKEND: str
+    KEY_FUNCTION: Optional[str] = None
+    KEY_PREFIX: str = ""
+    LOCATION: str = ""
+    OPTIONS: Optional[dict] = None
+    TIMEOUT: Optional[int] = None
+    VERSION: int = 1
+
+
+class DatabateTestDict(TypedDict):
+    CHARSET: Optional[str]
+    COLLATION: Optional[str]
+    DEPENDENCIES: Optional[List[str]]
+    MIGRATE: bool
+    MIRROR: Optional[str]
+    NAME: Optional[str]
+    SERIALIZE: Optional[bool]  # Deprecated since v4.0
+    TEMPLATE: Optional[str]
+    CREATE_DB: Optional[bool]
+    CREATE_USER: Optional[bool]
+    USER: Optional[str]
+    PASSWORD: Optional[str]
+    ORACLE_MANAGED_FILES: Optional[bool]
+    TBLSPACE: Optional[str]
+    TBLSPACE_TMP: Optional[str]
+    DATAFILE: Optional[str]
+    DATAFILE_TMP: Optional[str]
+    DATAFILE_MAXSIZE: Optional[str]
+    DATAFILE_TMP_MAXSIZE: Optional[str]
+    DATAFILE_SIZE: Optional[str]
+    DATAFILE_TMP_SIZE: Optional[str]
+    DATAFILE_EXTSIZE: Optional[str]
+    DATAFILE_TMP_EXTSIZE: Optional[str]
+
+
+class DatabaseModel(BaseModel):
+    ATOMIC_REQUESTS: bool = False
+    AUTOCOMMIT: bool = True
+    ENGINE: str
+    HOST: str = ""
+    NAME: str = ""
+    CONN_MAX_AGE: int = 0
+    OPTIONS: dict = {}
+    PASSWORD: str = ""
+    PORT: str = ""
+    TIME_ZONE: Optional[str] = None
+    DISABLE_SERVER_SIDE_CURSORS: bool = False
+    USER: str = ""
+    TEST: Optional[DatabateTestDict]
+    DATA_UPLOAD_MEMORY_MAX_SIZE: Optional[int]
