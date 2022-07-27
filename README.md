@@ -79,39 +79,40 @@ The other setting worth thinking about is `SECRET_KEY`. By default, `SECRET_KEY`
 
 ## Database configuration
 
-By defining multiple `DatabaseDsn` attributes of the `DatabaseSettings` sub-class, you can easily configure one or more database connections with environment variables. Google Cloud SQL database connections from within Google Cloud Run are supported; the DatabaseDsn type will detect and automatically escape DSN strings of the form `postgres://username:password@/cloudsql/project:region:instance/database` so that they can be properly handled. The below example is taken from the test project in this repository, and shows a working multi-database configuration file. In this example, the value for `DJANGO_SETTINGS_MODULE` should be set, as below, to `settings_test.database_settings.TestSettings`.
+The default database configuration can be configured by an environment variable named `DATABASE_URL`, containing a DSN (Data Source Name) string.
+
+Google Cloud SQL database connections from within Google Cloud Run are supported; the `DatabaseDsn` type will detect and automatically escape DSN strings of the form `postgres://username:password@/cloudsql/project:region:instance/database` so that they can be properly handled.
+
+Alternatively you can set all your databases at once, by using the `DATABASES` setting (either in a `PydanticSettings` sub-class or via the `DJANGO_DATABASES` environment variable:
 
 ```python
-class Databases(DatabaseSettings):
-    DEFAULT: DatabaseDsn = Field(env="DATABASE_URL")
-    SECONDARY: DatabaseDsn = Field(env="SECONDARY_DATABASE_URL")
-
-
-class TestSettings(PydanticSettings):
-    DATABASES: Databases = Field({})
+def MySettings(PydanticSettings):
+    DATABASES = {"default": "sqlite:///db.sqlite3"}  # type: ignore
 ```
 
+It is also possible to configure additional database connections with environment variables in the same way as the default `DATABASE_URL` configuration by using a `Field` that has a `configure_database` argument that points to the database alias in the `DATABASES` dictionary.
+
 ```python
-❯ DJANGO_SETTINGS_MODULE=settings_test.database_settings.TestSettings DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo poetry run python manage.py shell
-Python 3.10.2 (main, Feb  2 2022, 06:19:27) [Clang 13.0.0 (clang-1300.0.29.3)] on darwin
-Type "help", "copyright", "credits" or "license" for more information.
-(InteractiveConsole)
->>> from rich import print
->>> from django.conf import settings
->>> print(settings.DATABASES)
-{
-    'default': {
-        'NAME': 'database',
-        'USER': 'username',
-        'PASSWORD': 'password',
-        'HOST': '/cloudsql/project:region:instance',
-        'PORT': '',
-        'CONN_MAX_AGE': 0,
-        'ENGINE': 'django.db.backends.postgresql'
-    },
-    'secondary': {'NAME': 'foo', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', 'CONN_MAX_AGE': 0, 'ENGINE': 'django.db.backends.sqlite3'}
-}
->>>
+from pydantic_settings import PydanticSettings
+from pydantic_settings.database import DatabaseDsn
+
+
+def MySettings(PydanticSettings):
+    secondary_database_dsn: Optional[DatabaseDsn] = Field(
+        env="SECONDARY_DATABASE_URL", configure_database="secondary"
+    )
+```
+
+For example, the `settings_test/database_settings.py` file is has a settings subclass configured like this and outputs the changes to the `DATABASES` setting when run directly:
+
+```
+❯ DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo python settings_test/database_settings.py
+{'default': {'ENGINE': 'django.db.backends.postgresql',
+             'HOST': '/cloudsql/project:region:instance',
+             'NAME': 'database',
+             'PASSWORD': 'password',
+             'USER': 'username'},
+ 'secondary': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': 'foo'}}
 ```
 
 ## Sentry configuration

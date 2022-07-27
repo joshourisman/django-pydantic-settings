@@ -13,6 +13,7 @@ from pydantic import (
     root_validator,
     validator,
 )
+from pydantic.fields import ModelField
 from pydantic.networks import EmailStr, IPvAnyAddress
 from pydantic.types import FilePath
 
@@ -316,7 +317,9 @@ class PydanticSettings(BaseSettings):
 
     ROOT_URLCONF: Optional[str] = None
 
-    default_database_dsn: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
+    default_database_dsn: Optional[DatabaseDsn] = Field(
+        env="DATABASE_URL", configure_database="default"
+    )
 
     class Config:
         env_prefix = "DJANGO_"
@@ -342,10 +345,19 @@ class PydanticSettings(BaseSettings):
         Set the default database if it is not already set and is provided by
         default_database_dsn field.
         """
-        default_database_dsn: Optional[DatabaseDsn] = values["default_database_dsn"]
-        if default_database_dsn:
-            DATABASES = values["DATABASES"]
-            if not DATABASES.get("default"):
-                DATABASES["default"] = default_database_dsn.to_settings_model()
-            del values["default_database_dsn"]
+        DATABASES = values["DATABASES"]
+        for db_key, attr in cls.get_database_dsn_fields():
+            if not DATABASES.get(db_key):
+                database_dsn: Optional[DatabaseDsn] = values[attr]
+                if database_dsn:
+                    DATABASES[db_key] = database_dsn.to_settings_model()
+                del values[attr]
         return values
+
+    @classmethod
+    def get_database_dsn_fields(cls):
+        field: ModelField
+        for field in cls.__fields__.values():
+            db_key = field.field_info.extra.get("configure_database")
+            if db_key:
+                yield db_key, field.name
