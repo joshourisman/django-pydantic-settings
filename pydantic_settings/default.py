@@ -10,30 +10,25 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     generates for new projects.
     """
 
-    DATABASES: dict[Any, DatabaseModel] = {
-        "default": "sqlite:///db.sqlite3"  # type: ignore
-    }
+    DATABASES = {"default": "sqlite:///db.sqlite3"}  # type: ignore
 
-    TEMPLATES: list[TemplateBackendModel] = [
-        TemplateBackendModel.parse_obj(data)
-        for data in [
-            {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "DIRS": [],
-                "APP_DIRS": True,
-                "OPTIONS": {
-                    "context_processors": [
-                        "django.template.context_processors.debug",
-                        "django.template.context_processors.request",
-                        "django.contrib.auth.context_processors.auth",
-                        "django.contrib.messages.context_processors.messages",
-                    ],
-                },
+    TEMPLATES = [
+        {  # type: ignore
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "DIRS": [],
+            "APP_DIRS": True,
+            "OPTIONS": {
+                "context_processors": [
+                    "django.template.context_processors.debug",
+                    "django.template.context_processors.request",
+                    "django.contrib.auth.context_processors.auth",
+                    "django.contrib.messages.context_processors.messages",
+                ],
             },
-        ]
+        },
     ]
 
-    INSTALLED_APPS: list[str] = [
+    INSTALLED_APPS = [
         "django.contrib.admin",
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -42,7 +37,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.contrib.staticfiles",
     ]
 
-    MIDDLEWARE: list[str] = [
+    MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "django.middleware.common.CommonMiddleware",
@@ -52,7 +47,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
 
-    AUTH_PASSWORD_VALIDATORS: list[dict] = [
+    AUTH_PASSWORD_VALIDATORS = [
         {
             "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
         },
@@ -67,9 +62,9 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         },
     ]
 
-    TIME_ZONE: str = "UTC"
-    USE_TZ: bool = True
+    TIME_ZONE = "UTC"
+    USE_TZ = True
 
-    STATIC_URL: str = "static/"
+    STATIC_URL = "static/"
 
-    DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
+    DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
