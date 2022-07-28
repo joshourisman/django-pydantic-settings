@@ -113,11 +113,13 @@ class PydanticSettings(BaseSettings):
     ADMINS: Optional[List[Tuple[str, EmailStr]]] = _get_default_setting("ADMIN")
     INTERNAL_IPS: Optional[List[IPvAnyAddress]] = _get_default_setting("INTERNAL_IPS")
 
-    # Would be nice to do something like Union[Literal["*"], IPvAnyAddress, AnyUrl], but there are a lot of different
-    # options that need to be valid and don't necessarily fit those types.
+    # Would be nice to do something like Union[Literal["*"], IPvAnyAddress, AnyUrl], but
+    # there are a lot of different options that need to be valid and don't necessarily
+    # fit those types.
     ALLOWED_HOSTS: Optional[List[str]] = global_settings.ALLOWED_HOSTS
 
-    # Validate against actual list of valid TZs? https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+    # Validate against actual list of valid TZs?
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
     TIME_ZONE: Optional[str] = global_settings.TIME_ZONE
     USE_TZ: Optional[bool]
 
@@ -149,7 +151,9 @@ class PydanticSettings(BaseSettings):
     ] = global_settings.SERVER_EMAIL  # type: ignore
 
     DATABASES: Optional[DatabaseSettings] = Field({})
-    DATABASE_ROUTERS: Optional[List[str]] = global_settings.DATABASE_ROUTERS  # type: ignore
+    DATABASE_ROUTERS: Optional[
+        List[str]
+    ] = global_settings.DATABASE_ROUTERS  # type: ignore
     EMAIL_BACKEND: Optional[str] = global_settings.EMAIL_BACKEND
     EMAIL_HOST: Optional[str] = global_settings.EMAIL_HOST
     EMAIL_PORT: Optional[int] = global_settings.EMAIL_PORT
@@ -158,11 +162,17 @@ class PydanticSettings(BaseSettings):
     EMAIL_HOST_PASSWORD: Optional[str] = global_settings.EMAIL_HOST_PASSWORD
     EMAIL_USE_TLS: Optional[bool] = global_settings.EMAIL_USE_TLS
     EMAIL_USE_SSL: Optional[bool] = global_settings.EMAIL_USE_SSL
-    EMAIL_SSL_CERTFILE: Optional[FilePath] = global_settings.EMAIL_SSL_CERTFILE  # type: ignore
-    EMAIL_SSL_KEYFILE: Optional[FilePath] = global_settings.EMAIL_SSL_KEYFILE  # type: ignore
+    EMAIL_SSL_CERTFILE: Optional[
+        FilePath
+    ] = global_settings.EMAIL_SSL_CERTFILE  # type: ignore
+    EMAIL_SSL_KEYFILE: Optional[
+        FilePath
+    ] = global_settings.EMAIL_SSL_KEYFILE  # type: ignore
     EMAIL_TIMEOUT: Optional[int] = global_settings.EMAIL_TIMEOUT
     INSTALLED_APPS: Optional[List[str]] = global_settings.INSTALLED_APPS
-    TEMPLATES: Optional[List[TemplateBackendModel]] = global_settings.TEMPLATES  # type: ignore
+    TEMPLATES: Optional[
+        List[TemplateBackendModel]
+    ] = global_settings.TEMPLATES  # type: ignore
     FORM_RENDERER: Optional[str] = global_settings.FORM_RENDERER
     DEFAULT_FROM_EMAIL: Optional[str] = global_settings.DEFAULT_FROM_EMAIL
     EMAIL_SUBJECT_PREFIX: Optional[str] = global_settings.EMAIL_SUBJECT_PREFIX
@@ -192,7 +202,9 @@ class PydanticSettings(BaseSettings):
     DATA_UPLOAD_MAX_NUMBER_FIELDS: Optional[
         int
     ] = global_settings.DATA_UPLOAD_MAX_NUMBER_FIELDS
-    FILE_UPLOAD_TEMP_DIR: Optional[DirectoryPath] = global_settings.FILE_UPLOAD_TEMP_DIR  # type: ignore
+    FILE_UPLOAD_TEMP_DIR: Optional[
+        DirectoryPath
+    ] = global_settings.FILE_UPLOAD_TEMP_DIR  # type: ignore
     FILE_UPLOAD_PERMISSIONS: Optional[int] = global_settings.FILE_UPLOAD_PERMISSIONS
     FILE_UPLOAD_DIRECTORY_PERMISSIONS: Optional[
         int
@@ -244,7 +256,9 @@ class PydanticSettings(BaseSettings):
         bool
     ] = global_settings.SESSION_EXPIRE_AT_BROWSER_CLOSE
     SESSION_ENGINE: Optional[str] = global_settings.SESSION_ENGINE
-    SESSION_FILE_PATH: Optional[DirectoryPath] = global_settings.SESSION_FILE_PATH  # type: ignore
+    SESSION_FILE_PATH: Optional[
+        DirectoryPath
+    ] = global_settings.SESSION_FILE_PATH  # type: ignore
     SESSION_SERIALIZER: Optional[str] = global_settings.SESSION_SERIALIZER
     CACHES: Optional[CacheBackendModel] = global_settings.CACHES  # type: ignore
     CACHE_MIDDLEWARE_KEY_PREFIX: Optional[
@@ -297,8 +311,12 @@ class PydanticSettings(BaseSettings):
     TEST_NON_SERIALIZED_APPS: Optional[
         List[str]
     ] = global_settings.TEST_NON_SERIALIZED_APPS
-    FIXTURE_DIRS: Optional[List[DirectoryPath]] = global_settings.FIXTURE_DIRS  # type: ignore
-    STATICFILES_DIRS: Optional[List[DirectoryPath]] = global_settings.STATICFILES_DIRS  # type: ignore
+    FIXTURE_DIRS: Optional[
+        List[DirectoryPath]
+    ] = global_settings.FIXTURE_DIRS  # type: ignore
+    STATICFILES_DIRS: Optional[
+        List[DirectoryPath]
+    ] = global_settings.STATICFILES_DIRS  # type: ignore
     STATICFILES_STORAGE: Optional[str] = global_settings.STATICFILES_STORAGE
     STATICFILES_FINDERS: Optional[List[str]] = global_settings.STATICFILES_FINDERS
     MIGRATION_MODULES: Optional[Dict[str, str]] = global_settings.MIGRATION_MODULES
@@ -314,7 +332,9 @@ class PydanticSettings(BaseSettings):
     ] = global_settings.SECURE_HSTS_INCLUDE_SUBDOMAINS
     SECURE_HSTS_PRELOAD: Optional[bool] = global_settings.SECURE_HSTS_PRELOAD
     SECURE_HSTS_SECONDS: Optional[int] = global_settings.SECURE_HSTS_SECONDS
-    SECURE_REDIRECT_EXEMPT: Optional[List[Pattern]] = global_settings.SECURE_REDIRECT_EXEMPT  # type: ignore
+    SECURE_REDIRECT_EXEMPT: Optional[
+        List[Pattern]
+    ] = global_settings.SECURE_REDIRECT_EXEMPT  # type: ignore
     SECURE_REFERRER_POLICY: Optional[
         Literal[
             "no-referrer",
