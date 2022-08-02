@@ -1,6 +1,17 @@
 from inspect import getsourcefile
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Pattern, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Pattern,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
@@ -17,6 +28,7 @@ from pydantic.fields import ModelField
 from pydantic.networks import EmailStr, IPvAnyAddress
 from pydantic.types import FilePath
 
+from pydantic_settings.cache import CacheDsn
 from pydantic_settings.database import DatabaseDsn
 from pydantic_settings.models import CacheModel, DatabaseModel, TemplateBackendModel
 
@@ -325,6 +337,9 @@ class PydanticSettings(BaseSettings):
     default_database_dsn: Optional[DatabaseDsn] = Field(
         env="DATABASE_URL", configure_database="default"
     )
+    default_cache_dsn: Optional[DatabaseDsn] = Field(
+        env="CACHE_URL", configure_cache="default"
+    )
 
     class Config:
         env_prefix = "DJANGO_"
@@ -351,18 +366,34 @@ class PydanticSettings(BaseSettings):
         default_database_dsn field.
         """
         DATABASES = values["DATABASES"]
-        for db_key, attr in cls.get_database_dsn_fields():
+        for db_key, attr in cls._get_dsn_fields(field_extra="configure_database"):
             if not DATABASES.get(db_key):
                 database_dsn: Optional[DatabaseDsn] = values[attr]
                 if database_dsn:
                     DATABASES[db_key] = database_dsn.to_settings_model()
-                del values[attr]
+            del values[attr]
+        return values
+
+    @root_validator
+    def set_default_cache(cls, values: dict) -> dict:
+        """
+        Set the default cache if it is not already set and is provided by
+        default_cache_dsn field.
+        """
+        CACHES = values.get("CACHES") or {}
+        for cache_key, attr in cls._get_dsn_fields(field_extra="configure_cache"):
+            if not CACHES.get(cache_key):
+                cache_dsn: Optional[CacheDsn] = values[attr]
+                if cache_dsn:
+                    CACHES = values.setdefault("CACHES", {})
+                    CACHES[cache_key] = cache_dsn.to_settings_model()
+            del values[attr]
         return values
 
     @classmethod
-    def get_database_dsn_fields(cls):
+    def _get_dsn_fields(cls, field_extra: str) -> Iterable[tuple[str, str]]:
         field: ModelField
         for field in cls.__fields__.values():
-            db_key = field.field_info.extra.get("configure_database")
+            db_key = field.field_info.extra.get(field_extra)
             if db_key:
                 yield db_key, field.name
