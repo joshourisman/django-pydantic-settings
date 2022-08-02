@@ -40,8 +40,13 @@ class SetUp(BaseSettings):
             settings_dict = {
                 key: value
                 for key, value in self.settings_module().dict().items()
-                if hasattr(global_settings, key) is False
-                or value != getattr(global_settings, key)
+                if (
+                    hasattr(global_settings, key) is False
+                    # Running the test suite can modify settings.DATABASES, so always
+                    # override the mutable global_settings.DATABASES.
+                    or key == "DATABASES"
+                    or value != getattr(global_settings, key)
+                )
             }
 
             if settings_dict["BASE_DIR"] is None:
