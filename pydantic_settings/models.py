@@ -1,7 +1,8 @@
-from typing import List, Optional, TypedDict
+from typing import List, Optional
 
 from pydantic import DirectoryPath
 from pydantic.main import BaseModel
+from typing_extensions import TypedDict
 
 
 class TemplateBackendModel(BaseModel):

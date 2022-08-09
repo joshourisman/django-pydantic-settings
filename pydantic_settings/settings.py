@@ -391,7 +391,7 @@ class PydanticSettings(BaseSettings):
         return values
 
     @classmethod
-    def _get_dsn_fields(cls, field_extra: str) -> Iterable[tuple[str, str]]:
+    def _get_dsn_fields(cls, field_extra: str) -> Iterable[Tuple[str, str]]:
         field: ModelField
         for field in cls.__fields__.values():
             db_key = field.field_info.extra.get(field_extra)
