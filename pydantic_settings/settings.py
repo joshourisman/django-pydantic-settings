@@ -1,21 +1,42 @@
-import urllib.parse
 from inspect import getsourcefile
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Pattern, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Pattern,
+    Sequence,
+    Tuple,
+    Union,
+)
+
+from django.conf import global_settings, settings
+from django.core.management.utils import get_random_secret_key
+from pydantic import (
+    BaseSettings,
+    DirectoryPath,
+    Field,
+    PyObject,
+    parse_obj_as,
+    root_validator,
+    validator,
+)
+from pydantic.fields import ModelField
+from pydantic.networks import EmailStr, IPvAnyAddress
+from pydantic.types import FilePath
+
+from pydantic_settings.cache import CacheDsn
+from pydantic_settings.database import DatabaseDsn
+from pydantic_settings.models import CacheModel, DatabaseModel, TemplateBackendModel
 
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
 
-from django.conf import global_settings, settings
-from django.core.management.utils import get_random_secret_key
-from pydantic import BaseSettings, DirectoryPath, Field, PyObject, validator
-from pydantic.main import BaseModel
-from pydantic.networks import EmailStr, IPvAnyAddress
-from pydantic.types import FilePath
-
-from .database import DatabaseDsn
 
 DEFAULT_SETTINGS_MODULE_FIELD = Field(
     "pydantic_settings.settings.PydanticSettings", env="DJANGO_SETTINGS_MODULE"
@@ -31,8 +52,13 @@ class SetUp(BaseSettings):
             settings_dict = {
                 key: value
                 for key, value in self.settings_module().dict().items()
-                if hasattr(global_settings, key) is False
-                or value != getattr(global_settings, key)
+                if (
+                    hasattr(global_settings, key) is False
+                    # Running the test suite can modify settings.DATABASES, so always
+                    # override the mutable global_settings.DATABASES.
+                    or key == "DATABASES"
+                    or value != getattr(global_settings, key)
+                )
             }
 
             if settings_dict["BASE_DIR"] is None:
@@ -55,56 +81,12 @@ class SetUp(BaseSettings):
             settings.configure(**settings_dict)
 
 
-class DatabaseSettings(BaseSettings):
-    default: Optional[DatabaseDsn] = Field(env="DATABASE_URL")
-
-    @validator("*")
-    def format_database_settings(cls, v):
-        if v is None:
-            return {}
-
-        engines = {
-            "postgres": "django.db.backends.postgresql",
-            "postgis": "django.contrib.gis.db.backends.postgis",
-            "mssql": "sql_server.pyodbc",
-            "mysql": "django.db.backends.mysql",
-            "mysqlgis": "django.contrib.gis.db.backends.mysql",
-            "sqlite": "django.db.backends.sqlite3",
-            "spatialite": "django.contrib.gis.db.backends.spatialite",
-            "oracle": "django.db.backends.oracle",
-            "oraclegis": "django.contrib.gis.db.backends.oracle",
-            "redshift": "django_redshift_backend",
-        }
-
-        return {
-            "NAME": v.path[1:] if v.path.startswith("/") else v.path or "",
-            "USER": v.user or "",
-            "PASSWORD": v.password or "",
-            "HOST": urllib.parse.unquote(v.host) if v.host else "",
-            "PORT": v.port or "",
-            "CONN_MAX_AGE": 0,
-            "ENGINE": engines[v.scheme],
-        }
-
-
-class TemplateBackendModel(BaseModel):
-    BACKEND: str
-    NAME: Optional[str]
-    DIRS: Optional[List[DirectoryPath]]
-    APP_DIRS: Optional[bool]
-    OPTIONS: Optional[dict]
-
-
-class CacheBackendModel(BaseModel):
-    default: Dict[Literal["BACKEND"], str]
-
-
 def _get_default_setting(setting: str) -> Any:
     return getattr(global_settings, setting, None)
 
 
 class PydanticSettings(BaseSettings):
-    BASE_DIR: Optional[DirectoryPath]
+    BASE_DIR: Optional[DirectoryPath] = None
 
     DEBUG: Optional[bool] = global_settings.DEBUG
     DEBUG_PROPAGATE_EXCEPTIONS: Optional[
@@ -150,7 +132,7 @@ class PydanticSettings(BaseSettings):
         Union[EmailStr, Literal["root@localhost"]]
     ] = global_settings.SERVER_EMAIL  # type: ignore
 
-    DATABASES: Optional[DatabaseSettings] = Field({})
+    DATABASES: Dict[str, DatabaseModel] = global_settings.DATABASES  # type: ignore
     DATABASE_ROUTERS: Optional[
         List[str]
     ] = global_settings.DATABASE_ROUTERS  # type: ignore
@@ -229,7 +211,7 @@ class PydanticSettings(BaseSettings):
     X_FRAME_OPTIONS: Optional[str] = global_settings.X_FRAME_OPTIONS
     USE_X_FORWARDED_HOST: Optional[bool] = global_settings.USE_X_FORWARDED_HOST
     USE_X_FORWARDED_PORT: Optional[bool] = global_settings.USE_X_FORWARDED_PORT
-    WSGI_APPLICATION: Optional[str]
+    WSGI_APPLICATION: Optional[str] = None
     SECURE_PROXY_SSL_HEADER: Optional[
         Tuple[str, str]
     ] = global_settings.SECURE_PROXY_SSL_HEADER
@@ -260,7 +242,7 @@ class PydanticSettings(BaseSettings):
         DirectoryPath
     ] = global_settings.SESSION_FILE_PATH  # type: ignore
     SESSION_SERIALIZER: Optional[str] = global_settings.SESSION_SERIALIZER
-    CACHES: Optional[CacheBackendModel] = global_settings.CACHES  # type: ignore
+    CACHES: Dict[str, CacheModel] = global_settings.CACHES  # type: ignore
     CACHE_MIDDLEWARE_KEY_PREFIX: Optional[
         str
     ] = global_settings.CACHE_MIDDLEWARE_KEY_PREFIX
@@ -350,18 +332,68 @@ class PydanticSettings(BaseSettings):
     SECURE_SSL_HOST: Optional[str] = global_settings.SECURE_SSL_HOST
     SECURE_SSL_REDIRECT: Optional[bool] = global_settings.SECURE_SSL_REDIRECT
 
-    ROOT_URLCONF: Optional[str]
-    STATIC_URL: Optional[str] = global_settings.STATIC_URL
-    USE_I18N: Optional[bool] = global_settings.USE_I18N
-    USE_L10N: Optional[bool] = global_settings.USE_L10N
-    USE_TZ: Optional[bool] = global_settings.USE_TZ
+    ROOT_URLCONF: Optional[str] = None
+
+    default_database_dsn: Optional[DatabaseDsn] = Field(
+        env="DATABASE_URL", configure_database="default"
+    )
+    default_cache_dsn: Optional[DatabaseDsn] = Field(
+        env="CACHE_URL", configure_cache="default"
+    )
 
     class Config:
         env_prefix = "DJANGO_"
 
-    @validator("DATABASES")
-    def remove_empty_database_dicts(cls, v):
-        if v is None:
-            return {}
+    @validator("DATABASES", pre=True)
+    def parse_databases(cls, databases: dict) -> dict:
+        """
+        Parse any databases specified as DSNs into DatabaseModel objects.
+        """
+        parsed_databases = {}
+        for key, value in databases.items():
+            if value and isinstance(value, str) and not isinstance(value, DatabaseDsn):
+                value = parse_obj_as(DatabaseDsn, value)
+            if isinstance(value, DatabaseDsn):
+                value = value.to_settings_model()
+            if value:
+                parsed_databases[key] = value
+        return parsed_databases
 
-        return {key: value for key, value in v.dict().items() if value != {}}
+    @root_validator
+    def set_default_database(cls, values: dict) -> dict:
+        """
+        Set the default database if it is not already set and is provided by
+        default_database_dsn field.
+        """
+        DATABASES = values["DATABASES"]
+        for db_key, attr in cls._get_dsn_fields(field_extra="configure_database"):
+            if not DATABASES.get(db_key):
+                database_dsn: Optional[DatabaseDsn] = values[attr]
+                if database_dsn:
+                    DATABASES[db_key] = database_dsn.to_settings_model()
+            del values[attr]
+        return values
+
+    @root_validator
+    def set_default_cache(cls, values: dict) -> dict:
+        """
+        Set the default cache if it is not already set and is provided by
+        default_cache_dsn field.
+        """
+        CACHES = values.get("CACHES") or {}
+        for cache_key, attr in cls._get_dsn_fields(field_extra="configure_cache"):
+            if not CACHES.get(cache_key):
+                cache_dsn: Optional[CacheDsn] = values[attr]
+                if cache_dsn:
+                    CACHES = values.setdefault("CACHES", {})
+                    CACHES[cache_key] = cache_dsn.to_settings_model()
+            del values[attr]
+        return values
+
+    @classmethod
+    def _get_dsn_fields(cls, field_extra: str) -> Iterable[Tuple[str, str]]:
+        field: ModelField
+        for field in cls.__fields__.values():
+            db_key = field.field_info.extra.get(field_extra)
+            if db_key:
+                yield db_key, field.name

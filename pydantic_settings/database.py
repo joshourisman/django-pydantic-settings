@@ -1,11 +1,29 @@
 import re
+import urllib.parse
 from typing import Dict, Optional, Pattern, Tuple, cast
 from urllib.parse import quote_plus
 
 from pydantic import AnyUrl
 from pydantic.validators import constr_length_validator, str_validator
 
+from pydantic_settings.models import DatabaseModel
+
 _cloud_sql_regex_cache = None
+
+
+DB_ENGINES = {
+    "postgres": "django.db.backends.postgresql",
+    "postgresql": "django.db.backends.postgresql",
+    "postgis": "django.contrib.gis.db.backends.postgis",
+    "mssql": "sql_server.pyodbc",
+    "mysql": "django.db.backends.mysql",
+    "mysqlgis": "django.contrib.gis.db.backends.mysql",
+    "sqlite": "django.db.backends.sqlite3",
+    "spatialite": "django.contrib.gis.db.backends.spatialite",
+    "oracle": "django.db.backends.oracle",
+    "oraclegis": "django.contrib.gis.db.backends.oracle",
+    "redshift": "django_redshift_backend",
+}
 
 
 def cloud_sql_regex() -> Pattern[str]:
@@ -21,46 +39,7 @@ def cloud_sql_regex() -> Pattern[str]:
 
 
 class DatabaseDsn(AnyUrl):
-    def __init__(
-        self,
-        url: str,
-        *,
-        scheme: str,
-        user: Optional[str] = None,
-        password: Optional[str] = None,
-        host: Optional[str] = None,
-        tld: Optional[str] = None,
-        host_type: str = "domain",
-        port: Optional[str] = None,
-        path: str = None,
-        query: Optional[str] = None,
-        fragment: Optional[str] = None,
-    ) -> None:
-        str.__init__(url)
-        self.scheme = scheme
-        self.user = user
-        self.password = password
-        self.host = host
-        self.tld = tld
-        self.host_type = host_type
-        self.port = port
-        self.path = path
-        self.query = query
-        self.fragment = fragment
-
-    allowed_schemes = {
-        "postgres",
-        "postgresql",
-        "postgis",
-        "mssql",
-        "mysql",
-        "mysqlgis",
-        "sqlite",
-        "spatialite",
-        "oracle",
-        "oraclegis",
-        "redshift",
-    }
+    allowed_schemes = set(DB_ENGINES)
 
     @classmethod
     def validate(cls, value, field, config):
@@ -101,3 +80,16 @@ class DatabaseDsn(AnyUrl):
             return host, None, "socket", False
 
         return super().validate_host(parts)
+
+    def to_settings_model(self) -> DatabaseModel:
+        name = self.path
+        if name and name.startswith("/"):
+            name = name[1:]
+        return DatabaseModel(
+            NAME=name or "",
+            USER=self.user or "",
+            PASSWORD=self.password or "",
+            HOST=urllib.parse.unquote(self.host) if self.host else "",
+            PORT=self.port or "",
+            ENGINE=DB_ENGINES[self.scheme],
+        )
