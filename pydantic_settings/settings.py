@@ -337,7 +337,7 @@ class PydanticSettings(BaseSettings):
     default_database_dsn: Optional[DatabaseDsn] = Field(
         env="DATABASE_URL", configure_database="default"
     )
-    default_cache_dsn: Optional[DatabaseDsn] = Field(
+    default_cache_dsn: Optional[CacheDsn] = Field(
         env="CACHE_URL", configure_cache="default"
     )
 
@@ -382,11 +382,10 @@ class PydanticSettings(BaseSettings):
         """
         CACHES = values.get("CACHES") or {}
         for cache_key, attr in cls._get_dsn_fields(field_extra="configure_cache"):
-            if not CACHES.get(cache_key):
-                cache_dsn: Optional[CacheDsn] = values[attr]
-                if cache_dsn:
-                    CACHES = values.setdefault("CACHES", {})
-                    CACHES[cache_key] = cache_dsn.to_settings_model()
+            cache_dsn: Optional[CacheDsn] = values[attr]
+            if cache_dsn:
+                CACHES = values.setdefault("CACHES", {})
+                CACHES[cache_key] = cache_dsn.to_settings_model()
             del values[attr]
         return values
 

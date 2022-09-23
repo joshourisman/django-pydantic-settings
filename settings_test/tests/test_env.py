@@ -35,6 +35,12 @@ def test_env_loaded(configure_settings):
     assert settings.DATABASES["default"]["NAME"] == "foo"
 
 
+def test_cache_loaded(configure_settings):
+    configure_settings({"CACHE_URL": "redis:///1"})
+
+    assert "redis" in settings.CACHES["default"]["BACKEND"]
+
+
 def test_env_loaded2(configure_settings):
     configure_settings({"DATABASE_URL": "sqlite:///bar"})
     assert settings.DATABASES["default"]["NAME"] == "bar"
