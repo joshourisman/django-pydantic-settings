@@ -18,12 +18,12 @@ class CacheModel(BaseModel):
     KEY_FUNCTION: Optional[str] = None
     KEY_PREFIX: str = ""
     LOCATION: str = ""
-    OPTIONS: Optional[dict] = None
+    OPTIONS: dict = {}
     TIMEOUT: Optional[int] = None
     VERSION: int = 1
 
 
-class DatabateTestDict(TypedDict, total=False):
+class DatabaseTestDict(TypedDict, total=False):
     CHARSET: Optional[str]
     COLLATION: Optional[str]
     DEPENDENCIES: Optional[List[str]]
@@ -62,5 +62,5 @@ class DatabaseModel(BaseModel):
     TIME_ZONE: Optional[str] = None
     DISABLE_SERVER_SIDE_CURSORS: bool = False
     USER: str = ""
-    TEST: Optional[DatabateTestDict] = None
+    TEST: DatabaseTestDict = {}
     DATA_UPLOAD_MEMORY_MAX_SIZE: Optional[int] = None
