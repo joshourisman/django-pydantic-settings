@@ -171,3 +171,27 @@ def test_unescaped_gcp_cloudsql_socket(configure_settings):
     assert default["PASSWORD"] == "password"
     assert default["HOST"] == "/cloudsql/project:region:instance"
     assert default["ENGINE"] == "django.db.backends.postgresql"
+
+
+def test_default_db(configure_settings):
+    base_dir = Path(__file__).parent
+    configure_settings(
+        {
+            "DJANGO_SETTINGS_MODULE": "settings_test.database_settings.TestDefaultSettings",
+            "DJANGO_BASE_DIR": base_dir,
+        }
+    )
+
+    default = settings.DATABASES["default"]
+    assert default["NAME"] == str(base_dir / "db.sqlite3")
+
+
+def test_default_db_no_basedir(configure_settings):
+    configure_settings(
+        {
+            "DJANGO_SETTINGS_MODULE": "pydantic_settings.default.DjangoDefaultProjectSettings",
+        }
+    )
+
+    default = settings.DATABASES["default"]
+    assert default["NAME"] == "db.sqlite3"
