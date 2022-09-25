@@ -86,11 +86,8 @@ Google Cloud SQL database connections from within Google Cloud Run are supported
 Alternatively you can set all your databases at once, by using the `DATABASES` setting (either in a `PydanticSettings` sub-class or via the `DJANGO_DATABASES` environment variable:
 
 ```python
-from pydantic_settings import PydanticSettings, types
-
-
 def MySettings(PydanticSettings):
-    DATABASES: types.DATABASES = {"default": "sqlite:///db.sqlite3"}  # type: ignore
+    DATABASES = {"default": "sqlite:///db.sqlite3"}  # type: ignore
 ```
 
 It is also possible to configure additional database connections with environment variables in the same way as the default `DATABASE_URL` configuration by using a `Field` that has a `configure_database` argument that points to the database alias in the `DATABASES` dictionary.
