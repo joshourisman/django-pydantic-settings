@@ -207,7 +207,7 @@ def test_default_db(configure_settings):
     base_dir = Path(__file__).parent
     configure_settings(
         {
-            "DJANGO_SETTINGS_MODULE": "settings_test.database_settings.TestDefaultSettings",
+            "DJANGO_SETTINGS_MODULE": "settings_proj.conf.TestDefaultSettings",
             "DJANGO_BASE_DIR": base_dir,
         }
     )
