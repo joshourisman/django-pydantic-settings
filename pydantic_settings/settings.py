@@ -1,4 +1,4 @@
-from inspect import getsourcefile
+import inspect
 from pathlib import Path
 from typing import (
     Any,
@@ -44,41 +44,34 @@ DEFAULT_SETTINGS_MODULE_FIELD = Field(
 
 
 class SetUp(BaseSettings):
-    settings_module: PyObject = DEFAULT_SETTINGS_MODULE_FIELD
-    settings_module_string: str = DEFAULT_SETTINGS_MODULE_FIELD
+    DJANGO_SETTINGS_MODULE: PyObject = "pydantic_settings.settings.PydanticSettings"
 
     def configure(self):
-        if not settings.configured:
-            settings_dict = {
-                key: value
-                for key, value in self.settings_module().dict().items()
-                if (
-                    hasattr(global_settings, key) is False
-                    # Running the test suite can modify settings.DATABASES, so always
-                    # override the mutable global_settings.DATABASES.
-                    or key == "DATABASES"
-                    or value != getattr(global_settings, key)
-                )
-            }
+        if settings.configured:
+            return False
 
-            if settings_dict["BASE_DIR"] is None:
-                base_dir = Path(
-                    getsourcefile(SetUp().settings_module)
-                    or "pydantic_settings.settings.PydanticSettings"
-                ).parent.parent.parent
-                settings_dict["BASE_DIR"] = base_dir
-                base_module = self.settings_module_string.rsplit(".", 2)[0]
-            else:
-                base_module = f'{settings_dict["BASE_DIR"]}'
+        settings_obj: PydanticSettings
+        # The settings module can either be a settings class, or an instance of a
+        # settings class.
+        if inspect.isclass(self.DJANGO_SETTINGS_MODULE):
+            settings_obj = self.DJANGO_SETTINGS_MODULE()
+        else:
+            settings_obj = self.DJANGO_SETTINGS_MODULE
 
-            if settings_dict["ROOT_URLCONF"] is None:
-                settings_dict["ROOT_URLCONF"] = ".".join([base_module, "urls"])
-            if settings_dict.get("WSGI_APPLICATION") is None:
-                settings_dict["WSGI_APPLICATION"] = ".".join(
-                    [base_module, "wsgi", "application"]
-                )
-
-            settings.configure(**settings_dict)
+        settings_dict = {
+            key: value
+            for key, value in settings_obj.dict().items()
+            if key == key.upper()
+            and (
+                hasattr(global_settings, key) is False
+                # Running the test suite can modify settings.DATABASES, so always
+                # override the mutable global_settings.DATABASES.
+                or key == "DATABASES"
+                or value != getattr(global_settings, key)
+            )
+        }
+        settings.configure(**settings_dict)
+        return True
 
 
 def _get_default_setting(setting: str) -> Any:
@@ -396,3 +389,34 @@ class PydanticSettings(BaseSettings):
             db_key = field.field_info.extra.get(field_extra)
             if db_key:
                 yield db_key, field.name
+
+    @root_validator
+    def get_dynamic_defaults(cls, values):
+        """
+        Get dynamic defaults for BASE_DIR, ROOT_URLCONF and WSGI_APPLICATION.
+
+        If any of these settings are not explicitly set, and a custom `PydanticSettings`
+        class is being used then ROOT_URLCONF and WSGI_APPLICATION will be prepended
+        with the settings root module and BASE_DIR will be set to the parent directory
+        containing the root module package.
+        """
+        module = inspect.getmodule(cls)
+        if not module or module.__name__.startswith("pydantic_settings."):
+            return values
+
+        project_module_name = module.__name__.split(".", 1)[0]
+        if project_module_name:
+            if not values["WSGI_APPLICATION"]:
+                values["WSGI_APPLICATION"] = f"{project_module_name}.wsgi.application"
+            if not values["ROOT_URLCONF"]:
+                values["ROOT_URLCONF"] = f"{project_module_name}.urls"
+
+        base_dir: Optional[Path] = values["BASE_DIR"]
+        if not base_dir:
+            ancestor = module.__name__.count(".")
+            path = Path(inspect.getfile(module)).resolve()
+            if path.stem == "__init__":
+                ancestor += 1
+            values["BASE_DIR"] = path.parents[ancestor]
+
+        return values
