@@ -65,7 +65,7 @@ def test_database_port(configure_settings):
 def test_multiple_databases(configure_settings):
     configure_settings(
         {
-            "DJANGO_SETTINGS_MODULE": "settings_test.database_settings.TestSettings",
+            "DJANGO_SETTINGS_MODULE": "settings_proj.conf.TestSettings",
             "DATABASE_URL": "postgres://foo:bar@foo.com:6543/database",
             "SECONDARY_DATABASE_URL": "sqlite:///secondary.db",
         }
@@ -116,16 +116,44 @@ def test_templates_settings(configure_settings):
 
 
 def test_base_dir(configure_settings):
-    configure_settings({"DJANGO_BASE_DIR": "settings_test"})
+    tests_dir = Path(__file__).parent
+    configure_settings({"DJANGO_BASE_DIR": str(tests_dir)})
+    assert settings.BASE_DIR == tests_dir
 
-    assert settings.BASE_DIR == Path("settings_test")
-    assert settings.ROOT_URLCONF == "settings_test.urls"
-    assert settings.WSGI_APPLICATION == "settings_test.wsgi.application"
+
+def test_base_dir_default(configure_settings):
+    configure_settings()
+    assert settings.BASE_DIR == None
+
+
+def test_dynamic_defaults(configure_settings):
+    configure_settings()
+    assert settings.ROOT_URLCONF == None
+    assert settings.WSGI_APPLICATION == None
+
+
+def test_dynamic_defaults_custom_module(configure_settings):
+    configure_settings({"DJANGO_SETTINGS_MODULE": "settings_proj.conf.TestSettings"})
+
+    assert settings.BASE_DIR == Path(__file__).parent
+    assert settings.ROOT_URLCONF == "settings_proj.urls"
+    assert settings.WSGI_APPLICATION == "settings_proj.wsgi.application"
+
+
+def test_dynamic_defaults_custom_module_confdir(configure_settings):
+    configure_settings(
+        {"DJANGO_SETTINGS_MODULE": "settings_confdir_proj.conf.Settings"}
+    )
+
+    assert settings.BASE_DIR == Path(__file__).parent
+    assert settings.ROOT_URLCONF == "settings_confdir_proj.urls"
+    assert settings.WSGI_APPLICATION == "settings_confdir_proj.wsgi.application"
 
 
 def test_http(configure_settings):
-    configure_settings({"DJANGO_BASE_DIR": "settings_test", "DJANGO_DEBUG": "True"})
-
+    configure_settings(
+        {"DJANGO_ROOT_URLCONF": "settings_proj.urls", "DJANGO_DEBUG": "True"}
+    )
     client = Client()
     response = client.get("/")
 
@@ -133,9 +161,10 @@ def test_http(configure_settings):
 
 
 def test_escaped_gcp_cloudsql_socket(configure_settings):
+    tests_dir = Path(__file__).parent
     configure_settings(
         {
-            "DJANGO_BASE_DIR": "settings_test",
+            "DJANGO_BASE_DIR": str(tests_dir),
             "DATABASE_URL": "postgres://username:password@%2Fcloudsql%2Fproject%3Aregion%3Ainstance/database",
         }
     )
@@ -156,9 +185,10 @@ gd = global_settings.DATABASES
 
 
 def test_unescaped_gcp_cloudsql_socket(configure_settings):
+    tests_dir = Path(__file__).parent
     configure_settings(
         {
-            "DJANGO_BASE_DIR": "settings_test",
+            "DJANGO_BASE_DIR": str(tests_dir),
             "DATABASE_URL": "postgres://username:password@/cloudsql/project:region:instance/database",
         }
     )

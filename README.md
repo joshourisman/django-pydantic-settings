@@ -105,7 +105,7 @@ def MySettings(PydanticSettings):
     )
 ```
 
-For example, the `settings_test/database_settings.py` file is has a settings subclass configured like this and outputs the changes to the `DATABASES` setting when run directly:
+For example, the `tests/settings_proj/conf.py` file is has a settings subclass configured like this and outputs the changes to the `DATABASES` setting when run directly:
 
 ```
 ❯ DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo python settings_test/database_settings.py
