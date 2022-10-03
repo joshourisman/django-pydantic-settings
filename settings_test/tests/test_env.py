@@ -186,6 +186,18 @@ def test_default_db(configure_settings):
     assert default["NAME"] == str(base_dir / "db.sqlite3")
 
 
+def test_dotenv(configure_settings, monkeypatch):
+    monkeypatch.chdir("settings_test")
+    configure_settings(
+        {
+            "DJANGO_SETTINGS_MODULE": "settings_test.database_settings.TestDotenvSettings",
+            "DJANGO_MEDIA_URL": "/media-from-env/",
+        }
+    )
+    assert settings.MEDIA_URL == "/media-from-env/"
+    assert settings.STATIC_URL == "/static-from-dotenv/"
+
+
 def test_default_db_no_basedir(configure_settings):
     configure_settings(
         {

@@ -118,3 +118,27 @@ For example, the `settings_test/database_settings.py` file is has a settings sub
 ## Sentry configuration
 
 django-pydantic-settings provides built-in functionality for configuring your Django project to use [Sentry](https://sentry.io/). The simplest way to use this is to inherit from `pydantic_settings.sentry.SentrySettings` rather than `pydantic_settings.settings.PydanticSettings`. This adds the setting `SENTRY_DSN`, which uses the `pydantic_settings.sentry.SentryDsn` type. This will automatically be set according to the `DJANGO_SENTRY_DSN` environment variable, and expects a Sentry DSN (obviously). It validates that the provided DSN is a valid URL, and then automatically initializes the Sentry SDK using the built-in DjangoIntegration. Using this functionality required `sentry-sdk` to be installed, which will be included automatically if you install `django-pydantic-settings[sentry]`.
+
+## Dotenv (.env) support
+
+Dotenv files (generally named `.env`) are a common pattern that make it easy to use environment variables in a platform-independent manner. It follows the same general principles of all environment variables, and looks something like:
+
+```
+# Some settings local development
+DJANGO_DEBUG=True
+DJANGO_STATICFILES_STORAGE=django.contrib.staticfiles.storage.StaticFilesStorage
+```
+
+A dotenv file is usually added to your `.gitignore` so it is not shared across development environments.
+
+To use a dotenv file, add the following configuration to your `PydanticSettings` subclass:
+
+```python
+def MySettings(PydanticSettings):
+    ...
+
+    class Config:
+        env_file = '.env'
+```
+
+Note that environment variables are still read, and **environment variables will always take priority** over values loaded from a dotenv file.
