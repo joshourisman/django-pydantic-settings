@@ -73,9 +73,11 @@ To use a settings class called `MyLocal` in `local.py` you would set your `DJANG
 
 ## Required settings
 
-There are no settings that must be configured in order to use Django with django-pydantic-settings. All of the possible settings defined by Django ([Settings Reference](https://docs.djangoproject.com/en/3.1/ref/settings/)) are configured in the `pydantic_settings.settings.PydanticSettings` class, using their normal default values provided by Django, or a reasonable calculated value. Settings worth thinking about are `ROOT_URLCONF` and `WSGI_APPLICATION`, which, unless otherwise specified, are calculated based on your `DJANGO_SETTINGS_MODULE` assuming that you're using the default Django project layout a provided by `django-admin.py startproject`. So, for example, if your `DJANGO_SETINGS_MODULE` is set to `my_awesome_project.settings.PydanticSettingsSubclass`, then `ROOT_URLCONF` and `WSGI_APPLICATION` will be set to `my_awesome_project.urls` and `my_awesome_project.wsgi` respectively. This default behavior can be overridden by simply specifying `ROOT_URLCONF:str = 'the_actual_urlconf'` and `WSGI_APPLICATION:str = 'the_actual_wsgi_file.application'` in your `PydanticSettings` sub-class. Alternatively, rather than individually settings the `ROOT_URLCONF` and `WSGI_APPLICATION` settings, you can set `BASE_DIR`, and that will be used instead of `DJANGO_SETTINGS_MODULE`.
+There are no settings that must be configured in order to use Django with django-pydantic-settings. All of the possible settings defined by Django ([Settings Reference](https://docs.djangoproject.com/en/3.1/ref/settings/)) are configured in the `pydantic_settings.settings.PydanticSettings` class, using their normal default values provided by Django, or a reasonable calculated value.
 
-The other setting worth thinking about is `SECRET_KEY`. By default, `SECRET_KEY` is automatically generated using Django's own `get_random_secret_key()` function. This will work just fine, though as it will be re-calculated every time your `PydanticSettings` sub-class is instantiated, you should set this to somethign static if you're using Django's authentication and don't want to lose your session every time the server is restarted.
+If you define and use a settings custom subclass, `BASE_DIR`, `ROOT_URLCONF` and `WSGI_APPLICATION` have calculated defaults relative to its base module. For example, if your `DJANGO_SETTINGS_MODULE` is set to `my_awesome_project.settings.PydanticSettingsSubclass`, then `ROOT_URLCONF` and `WSGI_APPLICATION` will be default to `my_awesome_project.urls` and `my_awesome_project.wsgi.application` respectively, and `BASE_DIR` will default to the directory that contains `my_awesome_project`. This default behavior can be overridden by simply manually specifying `ROOT_URLCONF: str = 'the_actual_urlconf'` and `WSGI_APPLICATION: str = 'the_actual_wsgi_file.application'` in your `PydanticSettings` sub-class.
+
+The other setting worth thinking about is `SECRET_KEY`. By default, `SECRET_KEY` is automatically generated using Django's own `get_random_secret_key()` function. This will work just fine, though as it will be re-calculated every time your `PydanticSettings` sub-class is instantiated, you should set this to something static if you're using Django's authentication and don't want to lose your session every time the server is restarted.
 
 ## Database configuration
 
@@ -103,7 +105,7 @@ def MySettings(PydanticSettings):
     )
 ```
 
-For example, the `settings_test/database_settings.py` file is has a settings subclass configured like this and outputs the changes to the `DATABASES` setting when run directly:
+For example, the `tests/settings_proj/conf.py` file is has a settings subclass configured like this and outputs the changes to the `DATABASES` setting when run directly:
 
 ```
 ❯ DATABASE_URL=postgres://username:password@/cloudsql/project:region:instance/database SECONDARY_DATABASE_URL=sqlite:///foo python settings_test/database_settings.py
