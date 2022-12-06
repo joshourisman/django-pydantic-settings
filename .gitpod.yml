@@ -1,6 +1,7 @@
 github:
   prebuilds:
     branches: true
+    pullRequestsFromForks: true
 gitConfig:
   alias.st: status
 image:
