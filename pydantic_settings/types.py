@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from re import Pattern
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from pydantic import DirectoryPath, EmailStr, IPvAnyAddress
-from typing_extensions import Literal
 
 from pydantic_settings.models import CacheModel, DatabaseModel, TemplateBackendModel
 
@@ -17,7 +18,7 @@ ReferrerOptions = Literal[
     "strict-origin-when-cross-origin",
     "unsafe-url",
 ]
-RegexList = List[Pattern]
+RegexList = List[Pattern[str]]
 SameSiteOptions = Literal["Lax", "Strict", "None"]
 
 ABSOLUTE_URL_OVERRIDES = Dict[str, Callable]

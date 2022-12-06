@@ -1,4 +1,4 @@
-from typing import Dict, List
+from __future__ import annotations
 
 from pydantic import root_validator
 
@@ -12,9 +12,11 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     generates for new projects.
     """
 
-    DATABASES: Dict[str, DatabaseModel] = {"default": "sqlite:///db.sqlite3"}  # type: ignore
+    DATABASES: dict[str, DatabaseModel] = {
+        "default": "sqlite:///db.sqlite3",  # type: ignore
+    }
 
-    TEMPLATES: List[TemplateBackendModel] = [
+    TEMPLATES: list[TemplateBackendModel] = [
         TemplateBackendModel.parse_obj(data)
         for data in [
             {
@@ -33,7 +35,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         ]
     ]
 
-    INSTALLED_APPS: List[str] = [
+    INSTALLED_APPS: list[str] = [
         "django.contrib.admin",
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -42,7 +44,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.contrib.staticfiles",
     ]
 
-    MIDDLEWARE: List[str] = [
+    MIDDLEWARE: list[str] = [
         "django.middleware.security.SecurityMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "django.middleware.common.CommonMiddleware",
@@ -52,9 +54,10 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
 
-    AUTH_PASSWORD_VALIDATORS: List[dict] = [
+    AUTH_PASSWORD_VALIDATORS: list[dict] = [
         {
-            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+            "NAME": "django.contrib.auth.password_validation"
+            ".UserAttributeSimilarityValidator",
         },
         {
             "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",

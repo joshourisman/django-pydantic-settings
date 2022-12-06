@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import re
 import urllib.parse
-from typing import Dict, Optional, Pattern, Tuple, cast
+from typing import Pattern, cast
 from urllib.parse import quote_plus
 
 from pydantic import AnyUrl
@@ -30,7 +32,8 @@ def cloud_sql_regex() -> Pattern[str]:
     global _cloud_sql_regex_cache
     if _cloud_sql_regex_cache is None:
         _cloud_sql_regex_cache = re.compile(
-            r"(?:(?P<scheme>[a-z][a-z0-9+\-.]+)://)?"  # scheme https://tools.ietf.org/html/rfc3986#appendix-A
+            # scheme https://tools.ietf.org/html/rfc3986#appendix-A
+            r"(?:(?P<scheme>[a-z][a-z0-9+\-.]+)://)?"
             r"(?:(?P<user>[^\s:/]*)(?::(?P<password>[^\s/]*))?@)?"  # user info
             r"(?P<path>/[^\s?#]*)?",  # path
             re.IGNORECASE,
@@ -65,8 +68,8 @@ class DatabaseDsn(AnyUrl):
 
     @classmethod
     def validate_host(
-        cls, parts: Dict[str, str]
-    ) -> Tuple[Optional[str], Optional[str], str, bool]:
+        cls, parts: dict[str, str]
+    ) -> tuple[str | None, str | None, str, bool]:
         host = None
         for f in ("domain", "ipv4", "ipv6"):
             host = parts[f]
