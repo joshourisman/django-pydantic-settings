@@ -238,7 +238,7 @@ class PydanticSettings(BaseSettings):
     CSRF_TRUSTED_ORIGINS: List[str] = global_settings.CSRF_TRUSTED_ORIGINS
     CSRF_USE_SESSIONS: bool = global_settings.CSRF_USE_SESSIONS
     MESSAGE_STORAGE: str = global_settings.MESSAGE_STORAGE
-    LOGGING_CONFIG: str = global_settings.LOGGING_CONFIG
+    LOGGING_CONFIG: Union[str, None] = global_settings.LOGGING_CONFIG
     LOGGING: dict = global_settings.LOGGING
     DEFAULT_EXCEPTION_REPORTER: Union[str, None] = _get_default_setting(
         "DEFAULT_EXCEPTION_REPORTER"
