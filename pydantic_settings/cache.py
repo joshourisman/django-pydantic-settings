@@ -75,7 +75,7 @@ def parse(dsn: CacheDsn) -> dict:
     backend = CACHE_ENGINES[dsn.scheme]
     config: dict[str, Any] = {"BACKEND": backend}
 
-    options = {}
+    options: dict[str, Any] = {}
     if dsn.scheme in REDIS_PARSERS:
         options["PARSER_CLASS"] = REDIS_PARSERS[dsn.scheme]
 

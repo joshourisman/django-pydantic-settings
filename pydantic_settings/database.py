@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import urllib.parse
-from typing import TYPE_CHECKING, Pattern, cast
+from typing import TYPE_CHECKING, Pattern, Union, cast
 from urllib.parse import quote_plus
 
 from pydantic import AnyUrl
@@ -70,17 +70,17 @@ class DatabaseDsn(AnyUrl):
         return super().validate(value, field, config)
 
     @classmethod
-    def validate_host(cls, parts: Parts) -> tuple[str | None, str | None, str, bool]:
-        host = None
+    def validate_host(cls, parts: Parts) -> tuple[str, str | None, str, bool]:
+        host: str | None = None
         for f in ("domain", "ipv4", "ipv6"):
-            host = parts.get(f)
+            host = cast(Union[str, None], parts.get(f))
             if host:
                 break
 
         if host is None:
-            return None, None, "file", False
+            return None, None, "file", False  # type: ignore
 
-        if host.startswith("%2F"):
+        if host and host.startswith("%2F"):
             return host, None, "socket", False
 
         return super().validate_host(parts)

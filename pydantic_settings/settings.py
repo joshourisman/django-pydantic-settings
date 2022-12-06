@@ -108,7 +108,7 @@ class PydanticSettings(BaseSettings):
     )
 
     DATABASES: types.DATABASES = global_settings.DATABASES  # type: ignore
-    DATABASE_ROUTERS: list[str] = global_settings.DATABASE_ROUTERS
+    DATABASE_ROUTERS: list[str] = global_settings.DATABASE_ROUTERS  # type: ignore
     EMAIL_BACKEND: str = global_settings.EMAIL_BACKEND
     EMAIL_HOST: str = global_settings.EMAIL_HOST
     EMAIL_PORT: int = global_settings.EMAIL_PORT
