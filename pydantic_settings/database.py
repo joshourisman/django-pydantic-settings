@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import re
 import urllib.parse
-from typing import Pattern, cast
+from typing import TYPE_CHECKING, Pattern, cast
 from urllib.parse import quote_plus
 
 from pydantic import AnyUrl
 from pydantic.validators import constr_length_validator, str_validator
 
 from pydantic_settings.models import DatabaseModel
+
+if TYPE_CHECKING:
+    from pydantic.networks import Parts
 
 _cloud_sql_regex_cache = None
 
@@ -67,12 +70,10 @@ class DatabaseDsn(AnyUrl):
         return super().validate(value, field, config)
 
     @classmethod
-    def validate_host(
-        cls, parts: dict[str, str]
-    ) -> tuple[str | None, str | None, str, bool]:
+    def validate_host(cls, parts: Parts) -> tuple[str | None, str | None, str, bool]:
         host = None
         for f in ("domain", "ipv4", "ipv6"):
-            host = parts[f]
+            host = parts.get(f)
             if host:
                 break
 

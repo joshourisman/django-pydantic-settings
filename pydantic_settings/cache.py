@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 from urllib.parse import parse_qs
 
 from django import VERSION
@@ -72,7 +73,7 @@ class CacheDsn(AnyUrl):
 def parse(dsn: CacheDsn) -> dict:
     """Parses a cache URL."""
     backend = CACHE_ENGINES[dsn.scheme]
-    config = {"BACKEND": backend}
+    config: dict[str, Any] = {"BACKEND": backend}
 
     options = {}
     if dsn.scheme in REDIS_PARSERS:
@@ -82,7 +83,7 @@ def parse(dsn: CacheDsn) -> dict:
 
     # File based
     if dsn.host is None:
-        path = dsn.path
+        path = dsn.path or ""
 
         if dsn.scheme in FILE_UNIX_PREFIX:
             path = "unix:" + path

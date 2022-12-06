@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Sequence
 
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
@@ -28,7 +28,9 @@ DEFAULT_SETTINGS_MODULE_FIELD = Field(
 
 
 class SetUp(BaseSettings):
-    DJANGO_SETTINGS_MODULE: PyObject = "pydantic_settings.settings.PydanticSettings"
+    DJANGO_SETTINGS_MODULE: PyObject = (
+        "pydantic_settings.settings.PydanticSettings"  # type: ignore
+    )
 
     def configure(self):
         if settings.configured:
@@ -40,7 +42,7 @@ class SetUp(BaseSettings):
         if inspect.isclass(self.DJANGO_SETTINGS_MODULE):
             settings_obj = self.DJANGO_SETTINGS_MODULE()
         else:
-            settings_obj = self.DJANGO_SETTINGS_MODULE
+            settings_obj = self.DJANGO_SETTINGS_MODULE  # type: ignore
 
         settings_dict = {
             key: value
@@ -101,7 +103,9 @@ class PydanticSettings(BaseSettings):
     USE_L10N: bool = global_settings.USE_L10N
     MANAGERS: types.MANAGERS = _get_default_setting("MANAGERS")
     DEFAULT_CHARSET: str = global_settings.DEFAULT_CHARSET
-    SERVER_EMAIL: types.SERVER_EMAIL = global_settings.SERVER_EMAIL
+    SERVER_EMAIL: types.SERVER_EMAIL = (
+        global_settings.SERVER_EMAIL  # type: ignore
+    )
 
     DATABASES: types.DATABASES = global_settings.DATABASES  # type: ignore
     DATABASE_ROUTERS: list[str] = global_settings.DATABASE_ROUTERS
@@ -113,11 +117,15 @@ class PydanticSettings(BaseSettings):
     EMAIL_HOST_PASSWORD: str = global_settings.EMAIL_HOST_PASSWORD
     EMAIL_USE_TLS: bool = global_settings.EMAIL_USE_TLS
     EMAIL_USE_SSL: bool = global_settings.EMAIL_USE_SSL
-    EMAIL_SSL_CERTFILE: FilePath | None = global_settings.EMAIL_SSL_CERTFILE
-    EMAIL_SSL_KEYFILE: FilePath | None = global_settings.EMAIL_SSL_KEYFILE
+    EMAIL_SSL_CERTFILE: FilePath | None = (
+        global_settings.EMAIL_SSL_CERTFILE  # type: ignore
+    )
+    EMAIL_SSL_KEYFILE: FilePath | None = (
+        global_settings.EMAIL_SSL_KEYFILE  # type: ignore
+    )
     EMAIL_TIMEOUT: int | None = global_settings.EMAIL_TIMEOUT
     INSTALLED_APPS: list[str] = global_settings.INSTALLED_APPS
-    TEMPLATES: types.TEMPLATES = global_settings.TEMPLATES
+    TEMPLATES: types.TEMPLATES = global_settings.TEMPLATES  # type: ignore
     FORM_RENDERER: str = global_settings.FORM_RENDERER
     DEFAULT_FROM_EMAIL: str = global_settings.DEFAULT_FROM_EMAIL
     EMAIL_SUBJECT_PREFIX: str = global_settings.EMAIL_SUBJECT_PREFIX
@@ -135,7 +143,7 @@ class PydanticSettings(BaseSettings):
     DEFAULT_FILE_STORAGE: str = global_settings.DEFAULT_FILE_STORAGE
     MEDIA_ROOT: str = global_settings.MEDIA_ROOT
     MEDIA_URL: str = global_settings.MEDIA_URL
-    STATIC_ROOT: DirectoryPath | None = global_settings.STATIC_ROOT
+    STATIC_ROOT: DirectoryPath | None = global_settings.STATIC_ROOT  # type: ignore
     STATIC_URL: str | None = global_settings.STATIC_URL
     FILE_UPLOAD_HANDLERS: list[str] = global_settings.FILE_UPLOAD_HANDLERS
     FILE_UPLOAD_MAX_MEMORY_SIZE: int = global_settings.FILE_UPLOAD_MAX_MEMORY_SIZE
@@ -144,7 +152,7 @@ class PydanticSettings(BaseSettings):
         int
     ) = global_settings.DATA_UPLOAD_MAX_NUMBER_FIELDS
     FILE_UPLOAD_TEMP_DIR: types.FILE_UPLOAD_TEMP_DIR = (
-        global_settings.FILE_UPLOAD_TEMP_DIR
+        global_settings.FILE_UPLOAD_TEMP_DIR  # type: ignore
     )
     FILE_UPLOAD_PERMISSIONS: int | None = global_settings.FILE_UPLOAD_PERMISSIONS
     FILE_UPLOAD_DIRECTORY_PERMISSIONS: None | (
@@ -193,14 +201,16 @@ class PydanticSettings(BaseSettings):
         global_settings.SESSION_EXPIRE_AT_BROWSER_CLOSE
     )
     SESSION_ENGINE: str = global_settings.SESSION_ENGINE
-    SESSION_FILE_PATH: types.SESSION_FILE_PATH = global_settings.SESSION_FILE_PATH
+    SESSION_FILE_PATH: types.SESSION_FILE_PATH = (
+        global_settings.SESSION_FILE_PATH  # type: ignore
+    )
     SESSION_SERIALIZER: str = global_settings.SESSION_SERIALIZER
     CACHES: types.CACHES = global_settings.CACHES  # type: ignore
     CACHE_MIDDLEWARE_KEY_PREFIX: str = global_settings.CACHE_MIDDLEWARE_KEY_PREFIX
     CACHE_MIDDLEWARE_SECONDS: int | None = global_settings.CACHE_MIDDLEWARE_SECONDS
     CACHE_MIDDLEWARE_ALIAS: str = global_settings.CACHE_MIDDLEWARE_ALIAS
     AUTH_USER_MODEL: str = global_settings.AUTH_USER_MODEL
-    AUTHENTICATION_BACKENDS: list[str] = global_settings.AUTHENTICATION_BACKENDS
+    AUTHENTICATION_BACKENDS: Sequence[str] = global_settings.AUTHENTICATION_BACKENDS
     LOGIN_URL: str = global_settings.LOGIN_URL
     LOGIN_REDIRECT_URL: str = global_settings.LOGIN_REDIRECT_URL
     PASSWORD_RESET_TIMEOUT_DAYS: int | None = _get_default_setting(
@@ -234,8 +244,10 @@ class PydanticSettings(BaseSettings):
     )
     TEST_RUNNER: str = global_settings.TEST_RUNNER
     TEST_NON_SERIALIZED_APPS: list[str] = global_settings.TEST_NON_SERIALIZED_APPS
-    FIXTURE_DIRS: types.FIXTURE_DIRS = global_settings.FIXTURE_DIRS
-    STATICFILES_DIRS: types.STATICFILES_DIRS = global_settings.STATICFILES_DIRS
+    FIXTURE_DIRS: types.FIXTURE_DIRS = global_settings.FIXTURE_DIRS  # type: ignore
+    STATICFILES_DIRS: types.STATICFILES_DIRS = (
+        global_settings.STATICFILES_DIRS  # type: ignore
+    )
     STATICFILES_STORAGE: str = global_settings.STATICFILES_STORAGE
     STATICFILES_FINDERS: list[str] = global_settings.STATICFILES_FINDERS
     MIGRATION_MODULES: dict[str, str] = global_settings.MIGRATION_MODULES
