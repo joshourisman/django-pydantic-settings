@@ -15,7 +15,7 @@ def configure_settings(monkeypatch):
 
     def func(env: dict = {}):
         for key, value in env.items():
-            monkeypatch.setenv(key, value)
+            monkeypatch.setenv(key, str(value))
         SetUp().configure()
 
     yield func
