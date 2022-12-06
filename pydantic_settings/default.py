@@ -3,7 +3,7 @@ from typing import Dict, List
 from pydantic import root_validator
 
 from pydantic_settings.models import DatabaseModel, TemplateBackendModel
-from pydantic_settings.settings import DatabaseModel, PydanticSettings
+from pydantic_settings.settings import PydanticSettings
 
 
 class DjangoDefaultProjectSettings(PydanticSettings):
