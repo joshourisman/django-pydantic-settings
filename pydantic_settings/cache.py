@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import re
-from typing import Any
+from typing import Any, Dict
 from urllib.parse import parse_qs
 
 from django import VERSION
@@ -49,7 +47,7 @@ class CacheDsn(AnyUrl):
     __slots__ = AnyUrl.__slots__ + ("query_args",)
     host_required = False
 
-    query_args: dict[str, str]
+    query_args: Dict[str, str]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

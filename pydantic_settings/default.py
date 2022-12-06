@@ -1,4 +1,4 @@
-from __future__ import annotations
+from typing import Dict, List
 
 from pydantic import root_validator
 
@@ -12,11 +12,11 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     generates for new projects.
     """
 
-    DATABASES: dict[str, DatabaseModel] = {
+    DATABASES: Dict[str, DatabaseModel] = {
         "default": "sqlite:///db.sqlite3",  # type: ignore
     }
 
-    TEMPLATES: list[TemplateBackendModel] = [
+    TEMPLATES: List[TemplateBackendModel] = [
         TemplateBackendModel.parse_obj(data)
         for data in [
             {
@@ -35,7 +35,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         ]
     ]
 
-    INSTALLED_APPS: list[str] = [
+    INSTALLED_APPS: List[str] = [
         "django.contrib.admin",
         "django.contrib.auth",
         "django.contrib.contenttypes",
@@ -44,7 +44,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.contrib.staticfiles",
     ]
 
-    MIDDLEWARE: list[str] = [
+    MIDDLEWARE: List[str] = [
         "django.middleware.security.SecurityMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "django.middleware.common.CommonMiddleware",
@@ -54,7 +54,7 @@ class DjangoDefaultProjectSettings(PydanticSettings):
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
 
-    AUTH_PASSWORD_VALIDATORS: list[dict] = [
+    AUTH_PASSWORD_VALIDATORS: List[dict] = [
         {
             "NAME": "django.contrib.auth.password_validation"
             ".UserAttributeSimilarityValidator",

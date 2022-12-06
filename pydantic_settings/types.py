@@ -18,7 +18,7 @@ ReferrerOptions = Literal[
     "strict-origin-when-cross-origin",
     "unsafe-url",
 ]
-RegexList = List[Pattern[str]]
+RegexList = List[Pattern]
 SameSiteOptions = Literal["Lax", "Strict", "None"]
 
 ABSOLUTE_URL_OVERRIDES = Dict[str, Callable]

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import inspect
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Dict, Iterable, List, Sequence, Tuple, Union
 
 from django.conf import global_settings, settings
 from django.core.management.utils import get_random_secret_key
@@ -75,7 +73,7 @@ class PydanticSettings(BaseSettings):
     # Would be nice to do something like Union[Literal["*"], IPvAnyAddress, AnyUrl], but
     # there are a lot of different options that need to be valid and don't necessarily
     # fit those types.
-    ALLOWED_HOSTS: list[str] = global_settings.ALLOWED_HOSTS
+    ALLOWED_HOSTS: List[str] = global_settings.ALLOWED_HOSTS
 
     # Validate against actual list of valid TZs?
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
@@ -85,16 +83,18 @@ class PydanticSettings(BaseSettings):
     # Validate LANGUAGE_CODE and LANGUAGES_BIDI against LANGUAGES.
     LANGUAGE_CODE: str = global_settings.LANGUAGE_CODE
     LANGUAGES: types.LANGUAGES = global_settings.LANGUAGES
-    LANGUAGES_BIDI: list[str] = global_settings.LANGUAGES_BIDI
+    LANGUAGES_BIDI: List[str] = global_settings.LANGUAGES_BIDI
 
     USE_I18N: bool = global_settings.USE_I18N
     LOCALE_PATHS: types.LOCALE_PATHS = _get_default_setting("LOCALE_PATHS")
     LANGUAGE_COOKIE_NAME: str = global_settings.LANGUAGE_COOKIE_NAME
-    LANGUAGE_COOKIE_AGE: int | None = global_settings.LANGUAGE_COOKIE_AGE
-    LANGUAGE_COOKIE_DOMAIN: str | None = global_settings.LANGUAGE_COOKIE_DOMAIN
+    LANGUAGE_COOKIE_AGE: Union[int, None] = global_settings.LANGUAGE_COOKIE_AGE
+    LANGUAGE_COOKIE_DOMAIN: Union[str, None] = global_settings.LANGUAGE_COOKIE_DOMAIN
     LANGUAGE_COOKIE_PATH: str = global_settings.LANGUAGE_COOKIE_PATH
-    LANGUAGE_COOKIE_SECURE: bool | None = _get_default_setting("LANGUAGE_COOKIE_SECURE")
-    LANGUAGE_COOKIE_HTTPONLY: bool | None = _get_default_setting(
+    LANGUAGE_COOKIE_SECURE: Union[bool, None] = _get_default_setting(
+        "LANGUAGE_COOKIE_SECURE"
+    )
+    LANGUAGE_COOKIE_HTTPONLY: Union[bool, None] = _get_default_setting(
         "LANGUAGE_COOKIE_HTTPONLY"
     )
     LANGUAGE_COOKIE_SAMESITE: types.LANGUAGE_COOKIE_SAMESITE = _get_default_setting(
@@ -103,12 +103,10 @@ class PydanticSettings(BaseSettings):
     USE_L10N: bool = global_settings.USE_L10N
     MANAGERS: types.MANAGERS = _get_default_setting("MANAGERS")
     DEFAULT_CHARSET: str = global_settings.DEFAULT_CHARSET
-    SERVER_EMAIL: types.SERVER_EMAIL = (
-        global_settings.SERVER_EMAIL  # type: ignore
-    )
+    SERVER_EMAIL: types.SERVER_EMAIL = global_settings.SERVER_EMAIL  # type: ignore
 
     DATABASES: types.DATABASES = global_settings.DATABASES  # type: ignore
-    DATABASE_ROUTERS: list[str] = global_settings.DATABASE_ROUTERS  # type: ignore
+    DATABASE_ROUTERS: List[str] = global_settings.DATABASE_ROUTERS  # type: ignore
     EMAIL_BACKEND: str = global_settings.EMAIL_BACKEND
     EMAIL_HOST: str = global_settings.EMAIL_HOST
     EMAIL_PORT: int = global_settings.EMAIL_PORT
@@ -117,21 +115,21 @@ class PydanticSettings(BaseSettings):
     EMAIL_HOST_PASSWORD: str = global_settings.EMAIL_HOST_PASSWORD
     EMAIL_USE_TLS: bool = global_settings.EMAIL_USE_TLS
     EMAIL_USE_SSL: bool = global_settings.EMAIL_USE_SSL
-    EMAIL_SSL_CERTFILE: FilePath | None = (
-        global_settings.EMAIL_SSL_CERTFILE  # type: ignore
-    )
-    EMAIL_SSL_KEYFILE: FilePath | None = (
-        global_settings.EMAIL_SSL_KEYFILE  # type: ignore
-    )
-    EMAIL_TIMEOUT: int | None = global_settings.EMAIL_TIMEOUT
-    INSTALLED_APPS: list[str] = global_settings.INSTALLED_APPS
+    EMAIL_SSL_CERTFILE: Union[
+        FilePath, None
+    ] = global_settings.EMAIL_SSL_CERTFILE  # type: ignore
+    EMAIL_SSL_KEYFILE: Union[
+        FilePath, None
+    ] = global_settings.EMAIL_SSL_KEYFILE  # type: ignore
+    EMAIL_TIMEOUT: Union[int, None] = global_settings.EMAIL_TIMEOUT
+    INSTALLED_APPS: List[str] = global_settings.INSTALLED_APPS
     TEMPLATES: types.TEMPLATES = global_settings.TEMPLATES  # type: ignore
     FORM_RENDERER: str = global_settings.FORM_RENDERER
     DEFAULT_FROM_EMAIL: str = global_settings.DEFAULT_FROM_EMAIL
     EMAIL_SUBJECT_PREFIX: str = global_settings.EMAIL_SUBJECT_PREFIX
     APPEND_SLASH: bool = global_settings.APPEND_SLASH
     PREPEND_WWW: bool = global_settings.PREPEND_WWW
-    FORCE_SCRIPT_NAME: str | None = global_settings.FORCE_SCRIPT_NAME
+    FORCE_SCRIPT_NAME: Union[str, None] = global_settings.FORCE_SCRIPT_NAME
     DISALLOWED_USER_AGENTS: types.DISALLOWED_USER_AGENTS = (
         global_settings.DISALLOWED_USER_AGENTS
     )
@@ -143,22 +141,24 @@ class PydanticSettings(BaseSettings):
     DEFAULT_FILE_STORAGE: str = global_settings.DEFAULT_FILE_STORAGE
     MEDIA_ROOT: str = global_settings.MEDIA_ROOT
     MEDIA_URL: str = global_settings.MEDIA_URL
-    STATIC_ROOT: DirectoryPath | None = global_settings.STATIC_ROOT  # type: ignore
-    STATIC_URL: str | None = global_settings.STATIC_URL
-    FILE_UPLOAD_HANDLERS: list[str] = global_settings.FILE_UPLOAD_HANDLERS
+    STATIC_ROOT: Union[
+        DirectoryPath, None
+    ] = global_settings.STATIC_ROOT  # type: ignore
+    STATIC_URL: Union[str, None] = global_settings.STATIC_URL
+    FILE_UPLOAD_HANDLERS: List[str] = global_settings.FILE_UPLOAD_HANDLERS
     FILE_UPLOAD_MAX_MEMORY_SIZE: int = global_settings.FILE_UPLOAD_MAX_MEMORY_SIZE
     DATA_UPLOAD_MAX_MEMORY_SIZE: int = global_settings.DATA_UPLOAD_MAX_MEMORY_SIZE
-    DATA_UPLOAD_MAX_NUMBER_FIELDS: None | (
-        int
-    ) = global_settings.DATA_UPLOAD_MAX_NUMBER_FIELDS
+    DATA_UPLOAD_MAX_NUMBER_FIELDS: Union[
+        None, int
+    ] = global_settings.DATA_UPLOAD_MAX_NUMBER_FIELDS
     FILE_UPLOAD_TEMP_DIR: types.FILE_UPLOAD_TEMP_DIR = (
         global_settings.FILE_UPLOAD_TEMP_DIR  # type: ignore
     )
-    FILE_UPLOAD_PERMISSIONS: int | None = global_settings.FILE_UPLOAD_PERMISSIONS
-    FILE_UPLOAD_DIRECTORY_PERMISSIONS: None | (
-        int
-    ) = global_settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS
-    FORMAT_MODULE_PATH: str | None = global_settings.FORMAT_MODULE_PATH
+    FILE_UPLOAD_PERMISSIONS: Union[int, None] = global_settings.FILE_UPLOAD_PERMISSIONS
+    FILE_UPLOAD_DIRECTORY_PERMISSIONS: Union[
+        None, int
+    ] = global_settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS
+    FORMAT_MODULE_PATH: Union[str, None] = global_settings.FORMAT_MODULE_PATH
     DATE_FORMAT: str = global_settings.DATE_FORMAT
     DATETIME_FORMAT: str = global_settings.DATETIME_FORMAT
     TIME_FORMAT: str = global_settings.TIME_FORMAT
@@ -166,9 +166,9 @@ class PydanticSettings(BaseSettings):
     MONTH_DAY_FORMAT: str = global_settings.MONTH_DAY_FORMAT
     SHORT_DATE_FORMAT: str = global_settings.SHORT_DATE_FORMAT
     SHORT_DATETIME_FORMAT: str = global_settings.SHORT_DATETIME_FORMAT
-    DATE_INPUT_FORMATS: list[str] = global_settings.DATE_INPUT_FORMATS
-    TIME_INPUT_FORMATS: list[str] = global_settings.TIME_INPUT_FORMATS
-    DATETIME_INPUT_FORMATS: list[str] = global_settings.DATETIME_INPUT_FORMATS
+    DATE_INPUT_FORMATS: List[str] = global_settings.DATE_INPUT_FORMATS
+    TIME_INPUT_FORMATS: List[str] = global_settings.TIME_INPUT_FORMATS
+    DATETIME_INPUT_FORMATS: List[str] = global_settings.DATETIME_INPUT_FORMATS
     FIRST_DAY_OF_WEEK: int = global_settings.FIRST_DAY_OF_WEEK
     DECIMAL_SEPARATOR: str = global_settings.DECIMAL_SEPARATOR
     USE_THOUSAND_SEPARATOR: bool = global_settings.USE_THOUSAND_SEPARATOR
@@ -178,18 +178,18 @@ class PydanticSettings(BaseSettings):
     X_FRAME_OPTIONS: str = global_settings.X_FRAME_OPTIONS
     USE_X_FORWARDED_HOST: bool = global_settings.USE_X_FORWARDED_HOST
     USE_X_FORWARDED_PORT: bool = global_settings.USE_X_FORWARDED_PORT
-    WSGI_APPLICATION: str | None = None
+    WSGI_APPLICATION: Union[str, None] = None
     SECURE_PROXY_SSL_HEADER: types.SECURE_PROXY_SSL_HEADER = (
         global_settings.SECURE_PROXY_SSL_HEADER
     )
     DEFAULT_HASHING_ALGORITHM: types.DEFAULT_HASHING_ALGORITHM = _get_default_setting(
         "DEFAULT_HASHING_ALGORITHM"
     )
-    MIDDLEWARE: list[str] = global_settings.MIDDLEWARE
+    MIDDLEWARE: List[str] = global_settings.MIDDLEWARE
     SESSION_CACHE_ALIAS: str = global_settings.SESSION_CACHE_ALIAS
     SESSION_COOKIE_NAME: str = global_settings.SESSION_COOKIE_NAME
-    SESSION_COOKIE_AGE: int | None = global_settings.SESSION_COOKIE_AGE
-    SESSION_COOKIE_DOMAIN: str | None = global_settings.SESSION_COOKIE_DOMAIN
+    SESSION_COOKIE_AGE: Union[int, None] = global_settings.SESSION_COOKIE_AGE
+    SESSION_COOKIE_DOMAIN: Union[str, None] = global_settings.SESSION_COOKIE_DOMAIN
     SESSION_COOKIE_SECURE: bool = global_settings.SESSION_COOKIE_SECURE
     SESSION_COOKIE_PATH: str = global_settings.SESSION_COOKIE_PATH
     SESSION_COOKIE_HTTPONLY: bool = global_settings.SESSION_COOKIE_HTTPONLY
@@ -207,23 +207,27 @@ class PydanticSettings(BaseSettings):
     SESSION_SERIALIZER: str = global_settings.SESSION_SERIALIZER
     CACHES: types.CACHES = global_settings.CACHES  # type: ignore
     CACHE_MIDDLEWARE_KEY_PREFIX: str = global_settings.CACHE_MIDDLEWARE_KEY_PREFIX
-    CACHE_MIDDLEWARE_SECONDS: int | None = global_settings.CACHE_MIDDLEWARE_SECONDS
+    CACHE_MIDDLEWARE_SECONDS: Union[
+        int, None
+    ] = global_settings.CACHE_MIDDLEWARE_SECONDS
     CACHE_MIDDLEWARE_ALIAS: str = global_settings.CACHE_MIDDLEWARE_ALIAS
     AUTH_USER_MODEL: str = global_settings.AUTH_USER_MODEL
     AUTHENTICATION_BACKENDS: Sequence[str] = global_settings.AUTHENTICATION_BACKENDS
     LOGIN_URL: str = global_settings.LOGIN_URL
     LOGIN_REDIRECT_URL: str = global_settings.LOGIN_REDIRECT_URL
-    PASSWORD_RESET_TIMEOUT_DAYS: int | None = _get_default_setting(
+    PASSWORD_RESET_TIMEOUT_DAYS: Union[int, None] = _get_default_setting(
         "PASSWORD_RESET_TIMEOUT_DAYS"
     )
-    PASSWORD_RESET_TIMEOUT: int | None = _get_default_setting("PASSWORD_RESET_TIMEOUT")
-    PASSWORD_HASHERS: list[str] = global_settings.PASSWORD_HASHERS
-    AUTH_PASSWORD_VALIDATORS: list[dict] = global_settings.AUTH_PASSWORD_VALIDATORS
+    PASSWORD_RESET_TIMEOUT: Union[int, None] = _get_default_setting(
+        "PASSWORD_RESET_TIMEOUT"
+    )
+    PASSWORD_HASHERS: List[str] = global_settings.PASSWORD_HASHERS
+    AUTH_PASSWORD_VALIDATORS: List[dict] = global_settings.AUTH_PASSWORD_VALIDATORS
     SIGNING_BACKEND: str = global_settings.SIGNING_BACKEND
     CSRF_FAILURE_VIEW: str = global_settings.CSRF_FAILURE_VIEW
     CSRF_COOKIE_NAME: str = global_settings.CSRF_COOKIE_NAME
-    CSRF_COOKIE_AGE: int | None = global_settings.CSRF_COOKIE_AGE
-    CSRF_COOKIE_DOMAIN: str | None = global_settings.CSRF_COOKIE_DOMAIN
+    CSRF_COOKIE_AGE: Union[int, None] = global_settings.CSRF_COOKIE_AGE
+    CSRF_COOKIE_DOMAIN: Union[str, None] = global_settings.CSRF_COOKIE_DOMAIN
     CSRF_COOKIE_PATH: str = global_settings.CSRF_COOKIE_PATH
     CSRF_COOKIE_SECURE: bool = global_settings.CSRF_COOKIE_SECURE
     CSRF_COOKIE_HTTPONLY: bool = global_settings.CSRF_COOKIE_HTTPONLY
@@ -231,28 +235,28 @@ class PydanticSettings(BaseSettings):
         "CSRF_COOKIE_SAMESITE"
     )
     CSRF_HEADER_NAME: str = global_settings.CSRF_HEADER_NAME
-    CSRF_TRUSTED_ORIGINS: list[str] = global_settings.CSRF_TRUSTED_ORIGINS
+    CSRF_TRUSTED_ORIGINS: List[str] = global_settings.CSRF_TRUSTED_ORIGINS
     CSRF_USE_SESSIONS: bool = global_settings.CSRF_USE_SESSIONS
     MESSAGE_STORAGE: str = global_settings.MESSAGE_STORAGE
     LOGGING_CONFIG: str = global_settings.LOGGING_CONFIG
     LOGGING: dict = global_settings.LOGGING
-    DEFAULT_EXCEPTION_REPORTER: str | None = _get_default_setting(
+    DEFAULT_EXCEPTION_REPORTER: Union[str, None] = _get_default_setting(
         "DEFAULT_EXCEPTION_REPORTER"
     )
     DEFAULT_EXCEPTION_REPORTER_FILTER: str = (
         global_settings.DEFAULT_EXCEPTION_REPORTER_FILTER
     )
     TEST_RUNNER: str = global_settings.TEST_RUNNER
-    TEST_NON_SERIALIZED_APPS: list[str] = global_settings.TEST_NON_SERIALIZED_APPS
+    TEST_NON_SERIALIZED_APPS: List[str] = global_settings.TEST_NON_SERIALIZED_APPS
     FIXTURE_DIRS: types.FIXTURE_DIRS = global_settings.FIXTURE_DIRS  # type: ignore
     STATICFILES_DIRS: types.STATICFILES_DIRS = (
         global_settings.STATICFILES_DIRS  # type: ignore
     )
     STATICFILES_STORAGE: str = global_settings.STATICFILES_STORAGE
-    STATICFILES_FINDERS: list[str] = global_settings.STATICFILES_FINDERS
-    MIGRATION_MODULES: dict[str, str] = global_settings.MIGRATION_MODULES
-    SILENCED_SYSTEM_CHECKS: list[str] = global_settings.SILENCED_SYSTEM_CHECKS
-    SECURE_BROWSER_XSS_FILTER: bool | None = _get_default_setting(
+    STATICFILES_FINDERS: List[str] = global_settings.STATICFILES_FINDERS
+    MIGRATION_MODULES: Dict[str, str] = global_settings.MIGRATION_MODULES
+    SILENCED_SYSTEM_CHECKS: List[str] = global_settings.SILENCED_SYSTEM_CHECKS
+    SECURE_BROWSER_XSS_FILTER: Union[bool, None] = _get_default_setting(
         "SECURE_BROWSER_XSS_FILTER"
     )
     SECURE_CONTENT_TYPE_NOSNIFF: bool = global_settings.SECURE_CONTENT_TYPE_NOSNIFF
@@ -260,29 +264,29 @@ class PydanticSettings(BaseSettings):
         global_settings.SECURE_HSTS_INCLUDE_SUBDOMAINS
     )
     SECURE_HSTS_PRELOAD: bool = global_settings.SECURE_HSTS_PRELOAD
-    SECURE_HSTS_SECONDS: int | None = global_settings.SECURE_HSTS_SECONDS
+    SECURE_HSTS_SECONDS: Union[int, None] = global_settings.SECURE_HSTS_SECONDS
     SECURE_REDIRECT_EXEMPT: types.SECURE_REDIRECT_EXEMPT = (
         global_settings.SECURE_REDIRECT_EXEMPT
     )
     SECURE_REFERRER_POLICY: types.SECURE_REFERRER_POLICY = _get_default_setting(
         "SECURE_REFERRER_POLICY"
     )
-    SECURE_SSL_HOST: str | None = global_settings.SECURE_SSL_HOST
+    SECURE_SSL_HOST: Union[str, None] = global_settings.SECURE_SSL_HOST
     SECURE_SSL_REDIRECT: bool = global_settings.SECURE_SSL_REDIRECT
 
-    ROOT_URLCONF: str | None = None
+    ROOT_URLCONF: Union[str, None] = None
 
-    default_database_dsn: DatabaseDsn | None = Field(
+    default_database_dsn: Union[DatabaseDsn, None] = Field(
         env="DATABASE_URL", configure_database="default"
     )
-    default_cache_dsn: CacheDsn | None = Field(
+    default_cache_dsn: Union[CacheDsn, None] = Field(
         env="CACHE_URL", configure_cache="default"
     )
 
     class Config:
         env_prefix = "DJANGO_"
 
-    @validator("DATABASES", pre=True)
+    @validator("DATABASES", pre=True, allow_reuse=True)
     def parse_databases(cls, databases: dict) -> dict:
         """
         Parse any databases specified as DSNs into DatabaseModel objects.
@@ -297,7 +301,7 @@ class PydanticSettings(BaseSettings):
                 parsed_databases[key] = value
         return parsed_databases
 
-    @root_validator
+    @root_validator(allow_reuse=True)
     def set_default_database(cls, values: dict) -> dict:
         """
         Set the default database if it is not already set and is provided by
@@ -306,13 +310,13 @@ class PydanticSettings(BaseSettings):
         DATABASES = values["DATABASES"]
         for db_key, attr in cls._get_dsn_fields(field_extra="configure_database"):
             if not DATABASES.get(db_key):
-                database_dsn: DatabaseDsn | None = values[attr]
+                database_dsn: Union[DatabaseDsn, None] = values[attr]
                 if database_dsn:
                     DATABASES[db_key] = database_dsn.to_settings_model()
             del values[attr]
         return values
 
-    @root_validator
+    @root_validator(allow_reuse=True)
     def set_default_cache(cls, values: dict) -> dict:
         """
         Set the default cache if it is not already set and is provided by
@@ -320,7 +324,7 @@ class PydanticSettings(BaseSettings):
         """
         CACHES = values.get("CACHES") or {}
         for cache_key, attr in cls._get_dsn_fields(field_extra="configure_cache"):
-            cache_dsn: CacheDsn | None = values[attr]
+            cache_dsn: Union[CacheDsn, None] = values[attr]
             if cache_dsn:
                 CACHES = values.setdefault("CACHES", {})
                 CACHES[cache_key] = cache_dsn.to_settings_model()
@@ -328,7 +332,7 @@ class PydanticSettings(BaseSettings):
         return values
 
     @classmethod
-    def _get_dsn_fields(cls, field_extra: str) -> Iterable[tuple[str, str]]:
+    def _get_dsn_fields(cls, field_extra: str) -> Iterable[Tuple[str, str]]:
         field: ModelField
         for field in cls.__fields__.values():
             db_key = field.field_info.extra.get(field_extra)
@@ -356,7 +360,7 @@ class PydanticSettings(BaseSettings):
             if not values["ROOT_URLCONF"]:
                 values["ROOT_URLCONF"] = f"{project_module_name}.urls"
 
-        base_dir: Path | None = values["BASE_DIR"]
+        base_dir: Union[Path, None] = values["BASE_DIR"]
         if not base_dir:
             ancestor = module.__name__.count(".")
             path = Path(inspect.getfile(module)).resolve()
