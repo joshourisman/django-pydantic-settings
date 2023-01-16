@@ -472,14 +472,14 @@ files = [
 
 [[package]]
 name = "tox"
-version = "4.2.7"
+version = "4.3.0"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tox-4.2.7-py3-none-any.whl", hash = "sha256:853221127f0f9e7f612058fcb8b939081dbf4b2ef506df6c4fbeaaac4132a6db"},
-    {file = "tox-4.2.7.tar.gz", hash = "sha256:bce8f367720dbb29eb6dd1f1b411ffb188384e258e3e4db0820d0f0a0ba4ff10"},
+    {file = "tox-4.3.0-py3-none-any.whl", hash = "sha256:98a60f697babe0798f05ebbf59aa1ae653652b2a2743c4491bffe3167494064d"},
+    {file = "tox-4.3.0.tar.gz", hash = "sha256:9e067788e7da525d83976a47b4dd7c3fc4d24a30e687303fc011bc5c8a12316f"},
 ]
 
 [package.dependencies]
@@ -566,4 +566,4 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "eb58c18f5434991d1047a76aed66dfd6952801cd77a7761fdf6f7f6d5bb417ec"
+content-hash = "950c397dc01882fb1010fef0f52d4402ef405a6931d2ec2ed9fe8a4258ec3615"
