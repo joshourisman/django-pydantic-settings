@@ -391,19 +391,19 @@ cli = ["click (>=5.0)"]
 
 [[package]]
 name = "sentry-sdk"
-version = "1.23.1"
+version = "1.25.1"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = true
 python-versions = "*"
 files = [
-    {file = "sentry-sdk-1.23.1.tar.gz", hash = "sha256:0300fbe7a07b3865b3885929fb863a68ff01f59e3bcfb4e7953d0bf7fd19c67f"},
-    {file = "sentry_sdk-1.23.1-py2.py3-none-any.whl", hash = "sha256:a884e2478e0b055776ea2b9234d5de9339b4bae0b3a5e74ae43d131db8ded27e"},
+    {file = "sentry-sdk-1.25.1.tar.gz", hash = "sha256:aa796423eb6a2f4a8cd7a5b02ba6558cb10aab4ccdc0537f63a47b038c520c38"},
+    {file = "sentry_sdk-1.25.1-py2.py3-none-any.whl", hash = "sha256:79afb7c896014038e358401ad1d36889f97a129dfa8031c49b3f238cd1aa3935"},
 ]
 
 [package.dependencies]
 certifi = "*"
-urllib3 = {version = ">=1.26.11,<2.0.0", markers = "python_version >= \"3.6\""}
+urllib3 = {version = ">=1.26.11", markers = "python_version >= \"3.6\""}
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.5)"]
