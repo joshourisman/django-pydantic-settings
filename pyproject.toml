@@ -13,7 +13,7 @@ packages = [{ include = "pydantic_settings" }]
 python = "^3.8"
 Django = ">=1.11"
 sentry-sdk = { version = "*", optional = true }
-pydantic = { version = "^1.8", extras = ["email"] }
+pydantic = { version = ">=1.8,<3.0", extras = ["email"] }
 typing-extensions = { version = ">=3.7.4,<5.0.0", python = '<2.8' }
 
 [tool.poetry.extras]
