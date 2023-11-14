@@ -1,12 +1,15 @@
 import re
 import urllib.parse
-from typing import Dict, Optional, Pattern, Tuple, cast
+from typing import TYPE_CHECKING, Pattern, Tuple, Union, cast
 from urllib.parse import quote_plus
 
 from pydantic import AnyUrl
 from pydantic.validators import constr_length_validator, str_validator
 
 from pydantic_settings.models import DatabaseModel
+
+if TYPE_CHECKING:
+    from pydantic.networks import Parts
 
 _cloud_sql_regex_cache = None
 
@@ -26,11 +29,12 @@ DB_ENGINES = {
 }
 
 
-def cloud_sql_regex() -> Pattern[str]:
+def cloud_sql_regex() -> Pattern:
     global _cloud_sql_regex_cache
     if _cloud_sql_regex_cache is None:
         _cloud_sql_regex_cache = re.compile(
-            r"(?:(?P<scheme>[a-z][a-z0-9+\-.]+)://)?"  # scheme https://tools.ietf.org/html/rfc3986#appendix-A
+            # scheme https://tools.ietf.org/html/rfc3986#appendix-A
+            r"(?:(?P<scheme>[a-z][a-z0-9+\-.]+)://)?"
             r"(?:(?P<user>[^\s:/]*)(?::(?P<password>[^\s/]*))?@)?"  # user info
             r"(?P<path>/[^\s?#]*)?",  # path
             re.IGNORECASE,
@@ -64,19 +68,17 @@ class DatabaseDsn(AnyUrl):
         return super().validate(value, field, config)
 
     @classmethod
-    def validate_host(
-        cls, parts: Dict[str, str]
-    ) -> Tuple[Optional[str], Optional[str], str, bool]:
-        host = None
+    def validate_host(cls, parts: "Parts") -> Tuple[str, Union[str, None], str, bool]:
+        host: str | None = None
         for f in ("domain", "ipv4", "ipv6"):
-            host = parts[f]
+            host = cast(Union[str, None], parts.get(f))
             if host:
                 break
 
         if host is None:
-            return None, None, "file", False
+            return None, None, "file", False  # type: ignore
 
-        if host.startswith("%2F"):
+        if host and host.startswith("%2F"):
             return host, None, "socket", False
 
         return super().validate_host(parts)

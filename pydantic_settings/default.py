@@ -3,7 +3,7 @@ from typing import Dict, List
 from pydantic import root_validator
 
 from pydantic_settings.models import DatabaseModel, TemplateBackendModel
-from pydantic_settings.settings import DatabaseModel, PydanticSettings
+from pydantic_settings.settings import PydanticSettings
 
 
 class DjangoDefaultProjectSettings(PydanticSettings):
@@ -12,7 +12,9 @@ class DjangoDefaultProjectSettings(PydanticSettings):
     generates for new projects.
     """
 
-    DATABASES: Dict[str, DatabaseModel] = {"default": "sqlite:///db.sqlite3"}  # type: ignore
+    DATABASES: Dict[str, DatabaseModel] = {
+        "default": "sqlite:///db.sqlite3",  # type: ignore
+    }
 
     TEMPLATES: List[TemplateBackendModel] = [
         TemplateBackendModel.parse_obj(data)
@@ -54,7 +56,8 @@ class DjangoDefaultProjectSettings(PydanticSettings):
 
     AUTH_PASSWORD_VALIDATORS: List[dict] = [
         {
-            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+            "NAME": "django.contrib.auth.password_validation"
+            ".UserAttributeSimilarityValidator",
         },
         {
             "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",

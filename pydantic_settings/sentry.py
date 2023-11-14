@@ -2,8 +2,8 @@ from typing import Any
 
 import sentry_sdk
 from pydantic import AnyUrl
+from pydantic.config import BaseConfig
 from pydantic.fields import ModelField
-from pydantic.main import BaseConfig
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from .settings import PydanticSettings

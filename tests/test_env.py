@@ -15,7 +15,7 @@ def configure_settings(monkeypatch):
 
     def func(env: dict = {}):
         for key, value in env.items():
-            monkeypatch.setenv(key, value)
+            monkeypatch.setenv(key, str(value))
         SetUp().configure()
 
     yield func
@@ -48,8 +48,8 @@ def test_env_loaded2(configure_settings):
 
 def test_sqlite_path(configure_settings):
     """
-    Make sure we aren't improperly stripping the leading slash from the path for SQLite databases with an
-    absolute path
+    Make sure we aren't improperly stripping the leading slash from the path for SQLite
+    databases with an absolute path
     """
     configure_settings({"DATABASE_URL": "sqlite:////db/test.db"})
 
@@ -123,13 +123,13 @@ def test_base_dir(configure_settings):
 
 def test_base_dir_default(configure_settings):
     configure_settings()
-    assert settings.BASE_DIR == None
+    assert settings.BASE_DIR is None
 
 
 def test_dynamic_defaults(configure_settings):
     configure_settings()
-    assert settings.ROOT_URLCONF == None
-    assert settings.WSGI_APPLICATION == None
+    assert settings.ROOT_URLCONF is None
+    assert settings.WSGI_APPLICATION is None
 
 
 def test_dynamic_defaults_custom_module(configure_settings):
@@ -165,7 +165,10 @@ def test_escaped_gcp_cloudsql_socket(configure_settings):
     configure_settings(
         {
             "DJANGO_BASE_DIR": str(tests_dir),
-            "DATABASE_URL": "postgres://username:password@%2Fcloudsql%2Fproject%3Aregion%3Ainstance/database",
+            "DATABASE_URL": (
+                "postgres://username:password"
+                "@%2Fcloudsql%2Fproject%3Aregion%3Ainstance/database"
+            ),
         }
     )
 
@@ -179,17 +182,15 @@ def test_escaped_gcp_cloudsql_socket(configure_settings):
     assert default["ENGINE"] == "django.db.backends.postgresql"
 
 
-from django.conf import global_settings
-
-gd = global_settings.DATABASES
-
-
 def test_unescaped_gcp_cloudsql_socket(configure_settings):
     tests_dir = Path(__file__).parent
     configure_settings(
         {
             "DJANGO_BASE_DIR": str(tests_dir),
-            "DATABASE_URL": "postgres://username:password@/cloudsql/project:region:instance/database",
+            "DATABASE_URL": (
+                "postgres://username:password"
+                "@/cloudsql/project:region:instance/database"
+            ),
         }
     )
 
@@ -219,7 +220,9 @@ def test_default_db(configure_settings):
 def test_default_db_no_basedir(configure_settings):
     configure_settings(
         {
-            "DJANGO_SETTINGS_MODULE": "pydantic_settings.default.DjangoDefaultProjectSettings",
+            "DJANGO_SETTINGS_MODULE": (
+                "pydantic_settings.default.DjangoDefaultProjectSettings"
+            ),
         }
     )
 
